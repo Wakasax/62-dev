@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cursos — Wakasa Hub</title>
+<style>
+  :root{
+    --bg:#0a0a0c; --panel:#111114; --line:#232327; --text:#f2f0ee;
+    --muted:#8a8a90; --accent:#c81e2c; --accent-dim:#5c0e15;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;}
+  body{ background:var(--bg); color:var(--text); font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; -webkit-font-smoothing:antialiased; min-height:100vh; }
+  canvas#mesh{ position:fixed; inset:0; width:100%; height:100%; z-index:0; opacity:0.5; }
+  .glow{ position:fixed; top:50%; left:72%; width:680px; height:680px; transform:translate(-50%,-50%);
+    background:radial-gradient(circle, var(--accent) 0%, var(--accent-dim) 35%, transparent 70%);
+    filter:blur(40px); opacity:0.32; z-index:0; pointer-events:none; }
+
+  .brand{ position:fixed; top:36px; left:8vw; display:flex; align-items:center; gap:10px; z-index:3; text-decoration:none; }
+  .brand svg{ width:26px; height:26px; }
+  .brand span{ font-size:13px; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); font-weight:600; }
+
+  .back{ position:fixed; top:36px; right:8vw; z-index:3; display:flex; align-items:center; gap:8px;
+    color:var(--muted); text-decoration:none; font-size:13px; letter-spacing:0.04em; transition:color .2s; }
+  .back:hover{ color:var(--text); }
+
+  #view{ position:relative; z-index:1; min-height:100vh; padding:140px 8vw 100px; }
+  .eyebrow{ font-size:12px; letter-spacing:0.18em; text-transform:uppercase; color:var(--accent); font-weight:600;
+    margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+  .eyebrow::before{ content:''; width:18px; height:1px; background:var(--accent); display:inline-block; }
+  h1{ font-size:46px; font-weight:800; letter-spacing:-0.02em; margin-bottom:14px; }
+  .lede{ color:var(--muted); font-size:15px; max-width:520px; line-height:1.6; margin-bottom:56px; }
+
+  .grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:18px; }
+  .course{ background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:30px;
+    text-decoration:none; color:var(--text); display:flex; flex-direction:column; gap:18px;
+    transition:border-color .2s, transform .15s, background .2s; position:relative; overflow:hidden; }
+  .course::before{ content:''; position:absolute; top:0; left:0; right:0; height:2px;
+    background:linear-gradient(90deg, var(--accent), transparent); opacity:0; transition:opacity .2s; }
+  .course:hover{ border-color:var(--accent); transform:translateY(-3px); background:#15151a; }
+  .course:hover::before{ opacity:1; }
+
+  .course-top{ display:flex; justify-content:space-between; align-items:flex-start; }
+  .tag{ font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent);
+    border:1px solid var(--accent-dim); padding:4px 9px; border-radius:99px; font-weight:600; }
+  .arrow{ color:var(--accent); font-size:18px; opacity:0.6; transition:transform .2s; }
+  .course:hover .arrow{ transform:translate(3px,-3px); }
+
+  .course h3{ font-size:22px; font-weight:700; }
+  .course p{ font-size:13px; color:var(--muted); line-height:1.6; }
+
+  .meta{ display:flex; gap:16px; padding-top:14px; border-top:1px solid var(--line); }
+  .meta-item{ display:flex; flex-direction:column; gap:2px; }
+  .meta-item b{ font-size:15px; font-weight:700; }
+  .meta-item span{ font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); }
+
+  .footer-note{ position:fixed; bottom:32px; left:8vw; right:8vw; display:flex; justify-content:space-between;
+    color:#4a4a50; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; z-index:2; pointer-events:none; }
+
+  @media (max-width:640px){
+    #view{ padding-left:6vw; padding-right:6vw; }
+    h1{ font-size:32px; }
+    .back span{ display:none; }
+    .glow{ left:50%; opacity:0.22; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="mesh"></canvas>
+<div class="glow"></div>
+
+<a class="brand" href="index.html">
+  <svg viewBox="0 0 24 24" fill="none"><polygon points="12,2 22,8 22,16 12,22 2,16 2,8" stroke="#c81e2c" stroke-width="1.4"/><polygon points="12,7 17,10 17,14 12,17 7,14 7,10" fill="#c81e2c" opacity="0.6"/></svg>
+  <span>Wakasa Hub</span>
+</a>
+
+<a class="back" href="index.html">
+  <span>← Painel</span>
+</a>
+
+<div id="view">
+  <div class="eyebrow">Cursos</div>
+  <h1>Trilhas de aprendizado</h1>
+  <p class="lede">Quatro cursos completos, em formato de livro digital. Escolha uma trilha, ajuste a leitura do seu jeito e avance no seu ritmo — seu progresso fica salvo automaticamente.</p>
+
+  <div class="grid" id="grid"></div>
+</div>
+
+<div class="footer-note">
+  <span>Sistema privado</span>
+  <span id="clock"></span>
+</div>
+
+<script src="js/courses-data.js"></script>
+<script>
+  function tick(){
+    const d = new Date();
+    document.getElementById('clock').textContent = d.toLocaleString('pt-BR', { hour:'2-digit', minute:'2-digit', day:'2-digit', month:'2-digit', year:'numeric' });
+  }
+  tick(); setInterval(tick, 1000*30);
+
+  // ----- Render course cards from COURSES data -----
+  const grid = document.getElementById('grid');
+  let i = 1;
+  for(const id in COURSES){
+    const c = COURSES[id];
+    const totalPages = c.chapters.reduce((sum, ch) => sum + ch.pages.length, 0);
+    const totalChapters = c.chapters.length;
+
+    let savedPage = 0;
+    try{
+      const raw = localStorage.getItem('wakasa_progress_' + id);
+      if(raw) savedPage = JSON.parse(raw).flatIndex || 0;
+    }catch(e){}
+    const pct = totalPages ? Math.round((savedPage / totalPages) * 100) : 0;
+
+    const a = document.createElement('a');
+    a.className = 'course';
+    a.href = 'livro.html?c=' + id;
+    a.innerHTML = `
+      <div class="course-top">
+        <span class="tag">${c.tag}</span>
+        <span class="arrow">↗</span>
+      </div>
+      <div>
+        <h3>${c.title}</h3>
+        <p>${c.subtitle}</p>
+      </div>
+      <div class="meta">
+        <div class="meta-item"><b>${totalChapters}</b><span>Capítulos</span></div>
+        <div class="meta-item"><b>${totalPages}</b><span>Páginas</span></div>
+        <div class="meta-item"><b>${pct}%</b><span>Concluído</span></div>
+      </div>
+    `;
+    grid.appendChild(a);
+    i++;
+  }
+
+  // ===== Low-poly animated mesh background =====
+  const canvas = document.getElementById('mesh');
+  const ctx = canvas.getContext('2d');
+  let W, H, points = [];
+  const COUNT = 46;
+  function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+  function initPoints(){
+    points = [];
+    for(let i=0;i<COUNT;i++){
+      points.push({ x:Math.random()*W, y:Math.random()*H, vx:(Math.random()-0.5)*0.15, vy:(Math.random()-0.5)*0.15 });
+    }
+  }
+  function dist(a,b){ return Math.hypot(a.x-b.x, a.y-b.y); }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle = 'rgba(200,30,44,0.18)'; ctx.lineWidth = 1;
+    for(let i=0;i<points.length;i++){
+      for(let j=i+1;j<points.length;j++){
+        const d = dist(points[i], points[j]);
+        if(d < 160){
+          ctx.globalAlpha = 1 - d/160;
+          ctx.beginPath(); ctx.moveTo(points[i].x, points[i].y); ctx.lineTo(points[j].x, points[j].y); ctx.stroke();
+        }
+      }
+    }
+    ctx.globalAlpha = 1; ctx.fillStyle = 'rgba(200,30,44,0.5)';
+    for(const p of points){
+      ctx.beginPath(); ctx.arc(p.x, p.y, 1.6, 0, Math.PI*2); ctx.fill();
+      p.x += p.vx; p.y += p.vy;
+      if(p.x < 0 || p.x > W) p.vx *= -1;
+      if(p.y < 0 || p.y > H) p.vy *= -1;
+    }
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize', resize);
+  resize(); initPoints(); draw();
+</script>
+</body>
+</html>

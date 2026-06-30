@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Livro — Wakasa Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#08080a; --panel:#0d0d10; --page:#0c0c0e; --line:#232327; --text:#f2f0ee;
+    --muted:#8a8a90; --accent:#c81e2c; --accent-dim:#5c0e15;
+    --book-color:#f2efe9; --book-size:19px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{ scroll-behavior:smooth; }
+  body{ background:var(--bg); color:var(--text); font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; min-height:100vh; -webkit-font-smoothing:antialiased; }
+
+  /* ---------------- topbar ---------------- */
+  .topbar{ position:fixed; top:0; left:0; right:0; height:64px; z-index:30; display:flex; align-items:center;
+    justify-content:space-between; padding:0 24px; background:rgba(8,8,10,0.86); backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line); }
+  .tb-back{ color:var(--muted); text-decoration:none; font-size:13px; display:flex; align-items:center; gap:6px;
+    transition:color .2s; flex-shrink:0; }
+  .tb-back:hover{ color:var(--text); }
+  .tb-info{ text-align:center; overflow:hidden; }
+  .tb-course{ display:block; font-size:13px; font-weight:700; letter-spacing:0.02em; }
+  .tb-chapter{ display:block; font-size:11px; color:var(--muted); letter-spacing:0.04em; margin-top:1px;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .tb-actions{ display:flex; gap:8px; flex-shrink:0; }
+  .tb-btn{ background:var(--panel); border:1px solid var(--line); color:var(--text); font-size:12px;
+    padding:8px 12px; border-radius:7px; cursor:pointer; display:flex; align-items:center; gap:6px;
+    transition:border-color .2s, background .2s; font-family:inherit; }
+  .tb-btn:hover{ border-color:var(--accent); background:#151518; }
+  .tb-btn span.ic{ font-size:14px; }
+
+  .progress-track{ position:fixed; top:64px; left:0; right:0; height:2px; background:var(--line); z-index:30; }
+  .progress-fill{ height:100%; background:linear-gradient(90deg, var(--accent-dim), var(--accent)); width:0%; transition:width .25s ease; }
+
+  /* ---------------- sidebar (índice) ---------------- */
+  .sidebar{ position:fixed; top:0; left:-340px; width:320px; height:100%; background:var(--panel);
+    border-right:1px solid var(--line); z-index:50; padding:90px 26px 26px; transition:left .28s ease; overflow-y:auto; }
+  .sidebar.open{ left:0; }
+  .sidebar h4{ font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--accent); margin-bottom:18px; }
+  .chapter-item{ border:1px solid transparent; border-radius:8px; padding:12px 14px; margin-bottom:6px;
+    cursor:pointer; transition:background .2s, border-color .2s; }
+  .chapter-item:hover{ background:#17171b; }
+  .chapter-item.active{ background:#17171b; border-color:var(--accent-dim); }
+  .chapter-item .c-num{ font-size:10px; color:var(--muted); letter-spacing:0.08em; }
+  .chapter-item .c-title{ font-size:13.5px; font-weight:600; margin-top:3px; line-height:1.4; }
+  .chapter-item.active .c-title{ color:var(--accent); }
+  .chapter-item .c-pages{ font-size:11px; color:var(--muted); margin-top:4px; }
+
+  .overlay{ position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:40; opacity:0; pointer-events:none; transition:opacity .25s; }
+  .overlay.show{ opacity:1; pointer-events:auto; }
+
+  /* ---------------- color / display panel ---------------- */
+  .color-panel{ position:fixed; top:74px; right:24px; width:240px; background:var(--panel); border:1px solid var(--line);
+    border-radius:10px; padding:18px; z-index:50; opacity:0; transform:translateY(-8px); pointer-events:none;
+    transition:opacity .2s, transform .2s; box-shadow:0 20px 50px rgba(0,0,0,0.5); }
+  .color-panel.show{ opacity:1; transform:translateY(0); pointer-events:auto; }
+  .color-panel p{ font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:10px; }
+  .color-panel p:not(:first-child){ margin-top:18px; }
+  .swatches{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .swatch{ border:1px solid var(--line); background:#0a0a0c; border-radius:7px; padding:10px 0; cursor:pointer;
+    font-size:12px; font-weight:600; font-family:inherit; transition:border-color .2s, transform .15s; }
+  .swatch:hover{ transform:translateY(-1px); }
+  .swatch.active{ border-color:var(--accent); }
+  .sw-white{ color:#f4f1ee; }
+  .sw-red{ color:#c81e2c; }
+  .sw-chrome{ background-image:linear-gradient(180deg,#fff 0%,#9a9aa0 45%,#fff 55%,#6a6a70 100%); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .sw-gradient{ background-image:linear-gradient(90deg,#c81e2c,#ffb347 50%,#c81e2c); -webkit-background-clip:text; background-clip:text; color:transparent; }
+
+  .custom-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .custom-row span{ font-size:12.5px; color:var(--text); }
+  input[type="color"]{ width:32px; height:32px; border:1px solid var(--line); border-radius:6px; background:none; cursor:pointer; padding:0; }
+
+  .font-size-ctrl{ display:flex; align-items:center; justify-content:space-between; background:#0a0a0c;
+    border:1px solid var(--line); border-radius:7px; padding:6px; }
+  .font-size-ctrl button{ background:none; border:none; color:var(--text); font-size:13px; width:30px; height:28px;
+    cursor:pointer; border-radius:5px; font-family:inherit; }
+  .font-size-ctrl button:hover{ background:#1a1a1e; }
+  .font-size-ctrl span{ font-size:12px; color:var(--muted); }
+
+  /* ---------------- reader / page ---------------- */
+  .reader{ padding:130px 5vw 130px; min-height:100vh; display:flex; justify-content:center; }
+  .page{ width:100%; max-width:760px; background:var(--page); border:1px solid var(--line); border-radius:10px;
+    padding:64px 72px; box-shadow:0 40px 100px rgba(0,0,0,0.55); position:relative; }
+  .page::before{ content:''; position:absolute; inset:0; border-radius:10px; pointer-events:none;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,0.02); }
+
+  .chapter-heading{ margin-bottom:34px; padding-bottom:24px; border-bottom:1px solid var(--line); }
+  .chapter-heading .ch-eyebrow{ font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--accent); margin-bottom:10px; }
+  .chapter-heading h2{ font-family:'Source Serif 4', Georgia, serif; font-weight:700; font-size:30px; letter-spacing:-0.01em; color:var(--book-color); }
+
+  .line{ display:flex; gap:22px; margin-bottom:22px; align-items:flex-start; }
+  .ln{ color:#4f4f55; font-size:11px; font-family:'JetBrains Mono', monospace; padding-top:5px; width:22px;
+    text-align:right; flex-shrink:0; user-select:none; }
+  .block{ font-family:'Source Serif 4', Georgia, serif; font-size:var(--book-size); line-height:1.85;
+    color:var(--book-color); white-space:pre-line; flex:1; }
+  .block.is-code{ font-family:'JetBrains Mono', monospace; font-size:calc(var(--book-size) - 4px); line-height:1.7;
+    background:rgba(255,255,255,0.03); border-left:2px solid var(--accent-dim); padding:14px 18px; border-radius:0 6px 6px 0; }
+
+  /* color modes (applied on .page) */
+  .page.color-white .block{ color:#f2efe9; --book-color:#f2efe9; }
+  .page.color-red .block{ color:var(--accent); }
+  .page.color-chrome .block:not(.is-code){ background-image:linear-gradient(180deg,#fff 0%,#9a9aa0 45%,#fff 55%,#6a6a70 100%); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .page.color-gradient .block:not(.is-code){ background-image:linear-gradient(90deg,#c81e2c,#ffb347 50%,#c81e2c); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .page.color-custom .block{ color:var(--custom-color, #f2efe9); }
+  .page.color-white .chapter-heading h2{ color:#f2efe9; }
+  .page.color-red .chapter-heading h2{ color:var(--accent); }
+  .page.color-chrome .chapter-heading h2{ background-image:linear-gradient(180deg,#fff 0%,#9a9aa0 45%,#fff 55%,#6a6a70 100%); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .page.color-gradient .chapter-heading h2{ background-image:linear-gradient(90deg,#c81e2c,#ffb347 50%,#c81e2c); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .page.color-custom .chapter-heading h2{ color:var(--custom-color, #f2efe9); }
+
+  /* ---------------- bottom bar ---------------- */
+  .bottombar{ position:fixed; bottom:0; left:0; right:0; height:70px; background:rgba(8,8,10,0.9); backdrop-filter:blur(10px);
+    border-top:1px solid var(--line); display:flex; align-items:center; justify-content:center; gap:28px; z-index:30; }
+  .nav-btn{ background:var(--panel); border:1px solid var(--line); color:var(--text); font-size:13px;
+    padding:10px 18px; border-radius:8px; cursor:pointer; font-family:inherit; transition:border-color .2s, transform .15s; }
+  .nav-btn:hover:not(:disabled){ border-color:var(--accent); transform:translateY(-1px); }
+  .nav-btn:disabled{ opacity:0.3; cursor:default; }
+  #pageIndicator{ font-size:12.5px; color:var(--muted); letter-spacing:0.04em; min-width:140px; text-align:center; font-variant-numeric:tabular-nums; }
+
+  @media (max-width:720px){
+    .page{ padding:42px 26px; }
+    .tb-actions .tb-btn span.label{ display:none; }
+    .color-panel{ right:14px; left:14px; width:auto; }
+    .reader{ padding:120px 4vw 110px; }
+    .chapter-heading h2{ font-size:24px; }
+    .line{ gap:12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="tb-back" href="cursos.html">← <span class="label">Cursos</span></a>
+  <div class="tb-info">
+    <span class="tb-course" id="tbCourse">—</span>
+    <span class="tb-chapter" id="tbChapter">—</span>
+  </div>
+  <div class="tb-actions">
+    <button class="tb-btn" id="toggleIndex"><span class="ic">☰</span><span class="label">Índice</span></button>
+    <button class="tb-btn" id="toggleColor"><span class="ic">Aa</span><span class="label">Estilo</span></button>
+  </div>
+</div>
+<div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="overlay" id="overlay"></div>
+
+<aside class="sidebar" id="sidebar">
+  <h4>Capítulos</h4>
+  <div id="chapterList"></div>
+</aside>
+
+<div class="color-panel" id="colorPanel">
+  <p>Cor da fonte</p>
+  <div class="swatches">
+    <button class="swatch sw-white" data-color="white">Branco</button>
+    <button class="swatch sw-red" data-color="red">Vermelho</button>
+    <button class="swatch sw-chrome" data-color="chrome">Cromado</button>
+    <button class="swatch sw-gradient" data-color="gradient">Gradiente</button>
+  </div>
+  <p>Personalizada</p>
+  <div class="custom-row">
+    <span>Escolher cor</span>
+    <input type="color" id="customColor" value="#f2efe9">
+  </div>
+  <p>Tamanho do texto</p>
+  <div class="font-size-ctrl">
+    <button id="fontMinus">A−</button>
+    <span id="fontSizeLabel">100%</span>
+    <button id="fontPlus">A+</button>
+  </div>
+</div>
+
+<main class="reader">
+  <div class="page" id="page"></div>
+</main>
+
+<div class="bottombar">
+  <button class="nav-btn" id="prevBtn">‹ Anterior</button>
+  <span id="pageIndicator">Página 1 de 1</span>
+  <button class="nav-btn" id="nextBtn">Próxima ›</button>
+</div>
+
+<script src="js/courses-data.js"></script>
+<script>
+  // ---------- load course ----------
+  const params = new URLSearchParams(location.search);
+  const courseId = params.get('c') || Object.keys(COURSES)[0];
+  const course = COURSES[courseId];
+
+  if(!course){
+    document.getElementById('page').innerHTML = '<p style="color:#f2efe9;font-family:sans-serif">Curso não encontrado. <a href="cursos.html" style="color:#c81e2c">Voltar para cursos</a></p>';
+    throw new Error('Curso inválido');
+  }
+
+  document.title = course.title + ' — Wakasa Hub';
+  document.getElementById('tbCourse').textContent = course.title;
+
+  // ---------- flatten chapters/pages ----------
+  const flat = [];
+  course.chapters.forEach((ch, ci) => {
+    ch.pages.forEach((pg, pi) => {
+      flat.push({ chapterIndex: ci, chapterTitle: ch.title, pageInChapter: pi, content: pg });
+    });
+  });
+  const totalPages = flat.length;
+
+  // ---------- progress storage ----------
+  const progKey = 'wakasa_progress_' + courseId;
+  let current = 0;
+  try{
+    const raw = localStorage.getItem(progKey);
+    if(raw){ const d = JSON.parse(raw); if(d.flatIndex >= 0 && d.flatIndex < totalPages) current = d.flatIndex; }
+  }catch(e){}
+
+  function saveProgress(){
+    try{ localStorage.setItem(progKey, JSON.stringify({ flatIndex: current })); }catch(e){}
+  }
+
+  // ---------- display preferences ----------
+  const prefKey = 'wakasa_reader_prefs';
+  let prefs = { color:'white', custom:'#f2efe9', fontPct:100 };
+  try{
+    const raw = localStorage.getItem(prefKey);
+    if(raw) prefs = Object.assign(prefs, JSON.parse(raw));
+  }catch(e){}
+
+  function savePrefs(){
+    try{ localStorage.setItem(prefKey, JSON.stringify(prefs)); }catch(e){}
+  }
+
+  function applyPrefs(){
+    const page = document.getElementById('page');
+    page.className = 'page color-' + prefs.color;
+    document.documentElement.style.setProperty('--custom-color', prefs.custom);
+    document.documentElement.style.setProperty('--book-size', Math.round(19 * prefs.fontPct/100) + 'px');
+    document.getElementById('fontSizeLabel').textContent = prefs.fontPct + '%';
+    document.querySelectorAll('.swatch').forEach(s => s.classList.toggle('active', s.dataset.color === prefs.color));
+    document.getElementById('customColor').value = prefs.custom;
+  }
+
+  // ---------- code-block heuristic ----------
+  function looksLikeCode(text){
+    const hasBreak = /\n/.test(text);
+    const codeyChars = /[{}<>=]/.test(text);
+    const codeyStart = /^(início|fim|função|para |se |enquanto|ler |escrever|notas|numeros|idade|senha|media\(|:root|\.|@media|@keyframes|<!DOCTYPE|<html)/i.test(text.trim());
+    return hasBreak && (codeyChars || codeyStart);
+  }
+
+  // ---------- render current page ----------
+  function render(){
+    const item = flat[current];
+    const page = document.getElementById('page');
+    applyPrefs();
+
+    let html = '';
+    if(item.pageInChapter === 0){
+      html += `<div class="chapter-heading">
+        <div class="ch-eyebrow">Capítulo ${item.chapterIndex + 1} de ${course.chapters.length}</div>
+        <h2>${item.chapterTitle.replace(/^Cap[ií]tulo\s*\d+\s*[—-]\s*/i,'').replace(/^Chapter\s*\d+\s*[—-]\s*/i,'')}</h2>
+      </div>`;
+    }
+
+    const blocks = item.content.split(/\n\n+/).map(b => b.trim()).filter(Boolean);
+    blocks.forEach((b, idx) => {
+      const num = String(idx + 1).padStart(2, '0');
+      const codeClass = looksLikeCode(b) ? ' is-code' : '';
+      html += `<div class="line"><span class="ln">${num}</span><div class="block${codeClass}">${escapeHtml(b)}</div></div>`;
+    });
+
+    page.innerHTML = html;
+
+    document.getElementById('tbChapter').textContent = item.chapterTitle;
+    document.getElementById('pageIndicator').textContent = `Página ${current + 1} de ${totalPages}`;
+    document.getElementById('progressFill').style.width = ((current + 1) / totalPages * 100) + '%';
+    document.getElementById('prevBtn').disabled = current === 0;
+    document.getElementById('nextBtn').disabled = current === totalPages - 1;
+
+    document.querySelectorAll('.chapter-item').forEach((el, ci) => {
+      el.classList.toggle('active', ci === item.chapterIndex);
+    });
+
+    saveProgress();
+    window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
+  }
+
+  function escapeHtml(str){
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // ---------- sidebar (índice) ----------
+  const chapterList = document.getElementById('chapterList');
+  course.chapters.forEach((ch, ci) => {
+    const firstFlatIndex = flat.findIndex(f => f.chapterIndex === ci);
+    const div = document.createElement('div');
+    div.className = 'chapter-item';
+    div.innerHTML = `<div class="c-num">Capítulo ${ci + 1}</div>
+      <div class="c-title">${ch.title.replace(/^Cap[ií]tulo\s*\d+\s*[—-]\s*/i,'').replace(/^Chapter\s*\d+\s*[—-]\s*/i,'')}</div>
+      <div class="c-pages">${ch.pages.length} página${ch.pages.length>1?'s':''}</div>`;
+    div.addEventListener('click', () => {
+      current = firstFlatIndex;
+      render();
+      closeSidebar();
+    });
+    chapterList.appendChild(div);
+  });
+
+  // ---------- navigation ----------
+  document.getElementById('prevBtn').addEventListener('click', () => { if(current > 0){ current--; render(); } });
+  document.getElementById('nextBtn').addEventListener('click', () => { if(current < totalPages - 1){ current++; render(); } });
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'ArrowRight') document.getElementById('nextBtn').click();
+    if(e.key === 'ArrowLeft') document.getElementById('prevBtn').click();
+    if(e.key === 'Escape'){ closeSidebar(); closeColorPanel(); }
+  });
+
+  // ---------- sidebar toggle ----------
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+  function openSidebar(){ sidebar.classList.add('open'); overlay.classList.add('show'); }
+  function closeSidebar(){ sidebar.classList.remove('open'); overlay.classList.remove('show'); }
+  document.getElementById('toggleIndex').addEventListener('click', () => {
+    sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
+    closeColorPanel();
+  });
+  overlay.addEventListener('click', () => { closeSidebar(); closeColorPanel(); });
+
+  // ---------- color panel ----------
+  const colorPanel = document.getElementById('colorPanel');
+  function openColorPanel(){ colorPanel.classList.add('show'); }
+  function closeColorPanel(){ colorPanel.classList.remove('show'); }
+  document.getElementById('toggleColor').addEventListener('click', () => {
+    colorPanel.classList.contains('show') ? closeColorPanel() : openColorPanel();
+    closeSidebar();
+  });
+
+  document.querySelectorAll('.swatch').forEach(btn => {
+    btn.addEventListener('click', () => {
+      prefs.color = btn.dataset.color;
+      savePrefs();
+      applyPrefs();
+    });
+  });
+  document.getElementById('customColor').addEventListener('input', (e) => {
+    prefs.color = 'custom';
+    prefs.custom = e.target.value;
+    savePrefs();
+    applyPrefs();
+  });
+  document.getElementById('fontMinus').addEventListener('click', () => {
+    prefs.fontPct = Math.max(75, prefs.fontPct - 10);
+    savePrefs(); applyPrefs();
+  });
+  document.getElementById('fontPlus').addEventListener('click', () => {
+    prefs.fontPct = Math.min(140, prefs.fontPct + 10);
+    savePrefs(); applyPrefs();
+  });
+
+  // ---------- init ----------
+  render();
+</script>
+</body>
+</html>
