@@ -185,7 +185,536 @@
   <button class="nav-btn" id="nextBtn">Próxima ›</button>
 </div>
 
-<script src="js/courses-data.js"></script>
+<script>
+/* ============================================================
+   Wakasa Hub — Conteúdo dos cursos
+   Cada curso possui capítulos, e cada capítulo possui páginas.
+   Cada página é um texto com parágrafos separados por \n\n.
+   ============================================================ */
+
+const COURSES = {
+
+  // ============================================================
+  // 1) ADMINISTRAÇÃO
+  // ============================================================
+  administracao: {
+    title: "Administração",
+    subtitle: "Fundamentos para o auxiliar administrativo",
+    tag: "Negócios",
+    color: "#c81e2c",
+    chapters: [
+      {
+        title: "Capítulo 1 — Introdução à Administração",
+        pages: [
+          `Administrar vem do latim "ad" (direção, tendência) e "ministrare" (servir, prestar serviço). Administrar é, na essência, coordenar pessoas e recursos para que um objetivo comum seja alcançado da melhor forma possível — com menos desperdício, menos retrabalho e mais clareza sobre quem faz o quê.
+
+Henri Fayol, um dos pioneiros da administração moderna, descreveu quatro funções que até hoje organizam o trabalho de qualquer gestor ou auxiliar administrativo: planejar (definir o que precisa ser feito e como), organizar (distribuir recursos e responsabilidades), dirigir (orientar e liderar pessoas na execução) e controlar (acompanhar resultados e corrigir rotas).
+
+Você não precisa ocupar um cargo de chefia para usar essas quatro funções. Organizar uma agenda, planejar a rotina de um setor, acompanhar prazos de documentos ou liderar a si mesmo diante de várias tarefas — tudo isso é administração aplicada ao dia a dia.`,
+          `A administração como a conhecemos nasceu da Revolução Industrial. Fábricas cresceram, processos ficaram complexos e surgiu a necessidade de métodos formais de trabalho. Frederick Taylor propôs a Administração Científica: estudar o trabalho, eliminar movimentos desnecessários e padronizar tarefas para ganhar produtividade. Pouco depois, a Escola das Relações Humanas, com Elton Mayo, mostrou que pessoas motivadas e bem tratadas produzem mais do que pessoas apenas vigiadas — um equilíbrio entre método e gente que vale até hoje.
+
+Dois conceitos aparecem o tempo todo na rotina administrativa: eficiência é fazer mais com menos recursos (tempo, dinheiro, esforço); eficácia é atingir o resultado esperado, independentemente do caminho. O ideal é unir os dois — fazer a coisa certa, gastando o mínimo necessário para isso.
+
+Por fim, toda organização tem três níveis de decisão: o estratégico (direção, decisões de longo prazo), o tático (gerências, que traduzem a estratégia em planos de área) e o operacional (execução do dia a dia — onde o auxiliar administrativo atua com mais frequência, sendo a ponte entre o planejado e o realizado).`
+        ]
+      },
+      {
+        title: "Capítulo 2 — Estrutura Organizacional",
+        pages: [
+          `Toda empresa, por menor que seja, tem uma estrutura — formal ou não — que define quem reporta a quem. Essa estrutura costuma ser representada visualmente por um organograma: um diagrama com caixas (cargos ou setores) e linhas (relações de subordinação).
+
+Dois conceitos centrais ajudam a ler qualquer organograma. A cadeia de comando mostra o caminho de autoridade, do topo até a base. A amplitude de controle indica quantas pessoas um único gestor supervisiona diretamente — quanto maior a amplitude, mais "achatada" tende a ser a estrutura.
+
+Há ainda a escolha entre centralização (decisões concentradas no topo, mais controle, menos agilidade) e descentralização (decisões distribuídas, mais agilidade, exige mais confiança e preparo das equipes). Empresas pequenas tendem a ser mais centralizadas; empresas maduras buscam descentralizar a operação para crescer sem travar.`,
+          `Departamentalização é o critério usado para agrupar atividades semelhantes em setores. Os modelos mais comuns são: funcional (agrupa por especialidade — Financeiro, RH, Comercial, Compras); por produto ou serviço (cada linha de produto tem sua própria estrutura); geográfica (organização por região atendida); por cliente (setores dedicados a perfis distintos de cliente, como pessoa física e pessoa jurídica); e matricial (combina duas lógicas ao mesmo tempo, por exemplo função e projeto, com um colaborador respondendo a dois gestores).
+
+Um exemplo prático: em uma rede de clínicas, o setor Financeiro (funcional) cuida do caixa de todas as unidades, enquanto cada unidade (geográfica) tem sua própria recepção e equipe de atendimento. O auxiliar administrativo costuma transitar entre essas lógicas, dando suporte tanto a um setor funcional quanto a uma unidade específica.`
+        ]
+      },
+      {
+        title: "Capítulo 3 — Planejamento Estratégico",
+        pages: [
+          `Toda organização parte de três definições: missão (por que ela existe, o problema que resolve hoje), visão (onde ela quer chegar, o futuro desejado) e valores (os princípios que não são negociáveis no caminho até lá). Juntas, essas três frases orientam decisões do dia a dia — inclusive as pequenas, como priorizar um atendimento ou negociar um prazo com um fornecedor.
+
+O planejamento acontece em três horizontes de tempo. O estratégico olha de um a cinco anos e é definido pela diretoria. O tático traduz a estratégia em planos de área, geralmente anuais. O operacional organiza o trabalho semanal ou diário — é aqui que o auxiliar administrativo planeja sua própria rotina: quais documentos emitir, quais ligações retornar, quais relatórios fechar até sexta-feira.`,
+          `A análise SWOT (ou FOFA, em português) é uma das ferramentas mais usadas para organizar o pensamento estratégico. Ela cruza dois eixos: o ambiente interno (Forças e Fraquezas, que a empresa controla) e o ambiente externo (Oportunidades e Ameaças, que vêm do mercado). Listar esses quatro pontos antes de uma decisão importante evita escolhas baseadas só no otimismo ou só no medo.
+
+Depois de entender o cenário, as metas precisam ser SMART: específicas (Specific), mensuráveis (Measurable), atingíveis (Attainable), relevantes (Relevant) e com prazo definido (Time-bound). Comparando: "melhorar o atendimento" não é uma meta SMART; "reduzir o tempo médio de resposta de e-mails de 24h para 6h até o fim do trimestre" é. Quanto mais concreta a meta, mais fácil é para um auxiliar administrativo acompanhar o progresso em uma planilha simples.`
+        ]
+      },
+      {
+        title: "Capítulo 4 — Gestão de Pessoas",
+        pages: [
+          `O processo de trazer alguém para a equipe passa por duas etapas distintas. O recrutamento é a busca por candidatos — pode ser interno (promover ou remanejar quem já está na empresa) ou externo (atrair pessoas de fora). A seleção é a etapa de escolha entre os candidatos, usando entrevistas, testes e dinâmicas para encontrar quem melhor se encaixa na vaga e na cultura da empresa.
+
+Depois da contratação vem a integração, ou onboarding: o processo de apresentar a empresa, as normas, os sistemas e a equipe para a pessoa recém-chegada. Um bom onboarding reduz erros nos primeiros meses e acelera a produtividade — e é uma atividade em que o setor administrativo costuma ter papel central, organizando documentos, acessos e treinamentos iniciais.`,
+          `Liderar não é dar ordens; é influenciar pessoas para que alcancem um objetivo em conjunto. Existem estilos variados — do mais autoritário (decide sozinho, indicado para crises e decisões urgentes) ao mais participativo (decide com a equipe, indicado para times maduros e problemas complexos). Bons líderes adaptam o estilo à situação, em vez de usar sempre o mesmo.
+
+Sobre motivação, duas teorias clássicas ajudam a entender o que move as pessoas no trabalho. A Hierarquia de Necessidades de Maslow propõe que as pessoas buscam primeiro suprir necessidades básicas (segurança, remuneração) antes de buscar reconhecimento e realização. Já a Teoria dos Dois Fatores de Herzberg separa fatores higiênicos (salário, ambiente — evitam a insatisfação, mas não motivam por si só) de fatores motivacionais (desafio, reconhecimento, crescimento — esses sim geram engajamento real). Um feedback claro, específico e frequente é uma das ferramentas mais baratas e mais eficazes para sustentar a motivação de uma equipe.`
+        ]
+      },
+      {
+        title: "Capítulo 5 — Gestão Financeira Básica",
+        pages: [
+          `O fluxo de caixa é o registro de todas as entradas e saídas de dinheiro de uma empresa em um período. É a ferramenta mais básica — e mais importante — da gestão financeira, porque mostra se há dinheiro disponível para pagar as contas do mês, mesmo que a empresa esteja "no lucro" no papel.
+
+Duas contas alimentam esse fluxo: contas a pagar (compromissos assumidos com fornecedores, impostos, salários) e contas a receber (valores que clientes ainda vão pagar). Organizar essas duas listas com datas de vencimento é uma das tarefas mais comuns do auxiliar administrativo, geralmente em uma planilha ou sistema de gestão (ERP).`,
+          `A DRE (Demonstração do Resultado do Exercício) resume, de forma simplificada, receitas menos custos e despesas, chegando ao lucro ou prejuízo do período. Em sua versão mais enxuta: Receita Bruta − Impostos e Devoluções = Receita Líquida; Receita Líquida − Custos = Lucro Bruto; Lucro Bruto − Despesas Operacionais = Lucro Operacional.
+
+O ponto de equilíbrio (ou break-even) é o volume de vendas necessário para que a receita cubra exatamente os custos, sem lucro nem prejuízo. Vender abaixo disso gera prejuízo; vender acima começa a gerar lucro. Acompanhar indicadores simples — como ticket médio, prazo médio de recebimento e percentual de inadimplência — ajuda qualquer setor administrativo a antecipar problemas de caixa antes que eles aconteçam.`
+        ]
+      },
+      {
+        title: "Capítulo 6 — Processos, Qualidade e Empreendedorismo",
+        pages: [
+          `O ciclo PDCA (Plan, Do, Check, Act) é um método simples para melhorar qualquer processo continuamente: planejar a mudança, executar em pequena escala, checar os resultados e agir — padronizando o que funcionou ou ajustando o que não funcionou. É um ciclo, não uma linha reta: ele se repete indefinidamente, sempre buscando um pouco mais de eficiência.
+
+O programa 5S, de origem japonesa, organiza o ambiente de trabalho em cinco etapas: Seiri (utilização — separar o necessário do desnecessário), Seiton (organização — um lugar para cada coisa), Seiso (limpeza), Seiketsu (padronização) e Shitsuke (disciplina — manter o hábito). Aplicado a uma mesa de trabalho ou a um arquivo digital, o 5S reduz tempo perdido procurando documentos e informações.
+
+Indicadores de desempenho, os KPIs (Key Performance Indicators), são números que mostram se um processo está indo bem. Para um setor administrativo, exemplos típicos são: tempo médio de resposta a solicitações, número de documentos processados sem erro e prazo médio de emissão de notas fiscais.`,
+          `Um plano de negócios organiza, em um único documento, os pontos essenciais de uma ideia antes de colocá-la em prática: o problema que ela resolve, o público-alvo, a proposta de valor, a estrutura de custos, as fontes de receita e as primeiras metas. Não precisa ser longo — o importante é que force quem está empreendendo a pensar em cada peça do quebra-cabeça antes de gastar dinheiro.
+
+Para quem atua (ou vai atuar) como auxiliar administrativo, vale reter três hábitos práticos deste capítulo: documentar processos por escrito, mesmo os simples, para que qualquer pessoa da equipe consiga executá-los; revisar prazos e pendências em um horário fixo do dia, em vez de deixar tudo se acumular; e tratar cada solicitação — interna ou de cliente — com um registro claro de status, para que nada se perca entre um setor e outro. Esses três hábitos resumem, na prática, todo o conteúdo deste curso.`
+        ]
+      }
+    ]
+  },
+
+  // ============================================================
+  // 2) INGLÊS
+  // ============================================================
+  ingles: {
+    title: "Inglês",
+    subtitle: "Do zero à fluência conversacional",
+    tag: "Idiomas",
+    color: "#c81e2c",
+    chapters: [
+      {
+        title: "Chapter 1 — Foundations",
+        pages: [
+          `O inglês usa o mesmo alfabeto do português, mas a pronúncia das letras muda bastante. Vogais como "a" e "i" soam diferente do que você espera ("a" como em "cake" soa parecido com "êi"; "i" como em "like" soa como "ái"). Não tente decorar regras de pronúncia isoladas — ouça nativos falando (séries, músicas, podcasts) e repita em voz alta. O ouvido aprende mais rápido que a regra.
+
+Os pronomes pessoais em inglês são: I (eu), you (você/tu), he (ele), she (ela), it (isso/aquilo, para objetos e animais), we (nós), they (eles/elas). Note que "you" serve tanto para singular quanto plural, e que não existe distinção formal/informal como em outras línguas — "you" é sempre "you".
+
+Cumprimentos básicos: "Hello" / "Hi" (oi), "Good morning/afternoon/evening" (bom dia/boa tarde/boa noite), "How are you?" (como você está?), respondido com "I'm fine, thank you" ou, de forma mais natural, "I'm good, thanks".`,
+          `O verbo "to be" (ser/estar) é o primeiro verbo essencial do inglês, porque aparece em frases de apresentação, descrição e estado. Na forma afirmativa: I am, you are, he/she/it is, we are, they are — geralmente contraídos no dia a dia (I'm, you're, he's, we're, they're).
+
+Na forma negativa, basta adicionar "not": I am not (I'm not), you are not (you aren't), he is not (he isn't). Na forma interrogativa, o verbo vai para o início da frase: "Are you Brazilian?", "Is she a teacher?".
+
+Diálogo de exemplo:
+— Hi! What's your name? (Oi! Qual é o seu nome?)
+— My name is Ana. I'm from Brazil. (Meu nome é Ana. Sou do Brasil.)
+— Nice to meet you! Are you a student? (Prazer em conhecê-la! Você é estudante?)
+— Yes, I am. I'm studying English. (Sim, sou. Estou estudando inglês.)`
+        ]
+      },
+      {
+        title: "Chapter 2 — Present Simple & Daily Routine",
+        pages: [
+          `O Present Simple descreve hábitos, rotinas e fatos gerais — exatamente o tempo verbal que você usa para falar "eu acordo às sete" ou "ela trabalha em um banco". A estrutura, na afirmativa, é sujeito + verbo (no infinitivo, sem "to"): "I wake up at seven" / "She works at a bank".
+
+A regra que mais confunde iniciantes é o "-s" na terceira pessoa do singular (he/she/it): o verbo recebe "s", "es" ou muda de "y" para "ies" dependendo da terminação. Exemplos: "he works", "she watches", "it goes", "he studies" (study → studies). Esse "s" não é plural — é uma marca gramatical exclusiva da terceira pessoa do singular no presente.
+
+Advérbios de frequência ajudam a dar nuance à rotina: always (sempre), usually (geralmente), often (frequentemente), sometimes (às vezes), rarely (raramente), never (nunca). Eles costumam ficar antes do verbo principal: "I always wake up early", "She never drinks coffee".`,
+          `Vocabulário essencial para descrever uma rotina: wake up (acordar), get up (levantar), take a shower (tomar banho), have breakfast/lunch/dinner (tomar café/almoçar/jantar), go to work/school (ir ao trabalho/escola), come home (voltar para casa), go to bed (ir dormir).
+
+Exemplo de parágrafo descrevendo uma rotina:
+"I usually wake up at 6:30 a.m. I take a shower and have breakfast before I go to work. I work from 9 a.m. to 6 p.m. In the evening, I have dinner with my family and watch TV. I go to bed around 11 p.m."
+
+Erro comum de iniciantes: esquecer o "-s" na terceira pessoa ("She work" em vez de "She works") ou usar "do/does" junto do verbo na afirmativa ("She does work" só é correto se quiser dar ênfase: "She DOES work hard"). Nas perguntas e negativas, porém, "do/does" é obrigatório: "Does she work on Saturdays?" / "She doesn't work on Saturdays".`
+        ]
+      },
+      {
+        title: "Chapter 3 — Past Simple",
+        pages: [
+          `O Past Simple é usado para ações concluídas no passado, geralmente acompanhadas de uma referência de tempo: yesterday (ontem), last week (semana passada), in 2020, two years ago (dois anos atrás).
+
+Para verbos regulares, basta adicionar "-ed" ao infinitivo: work → worked, play → played, study → studied (atenção à mudança de "y" para "i" antes do "-ed" quando o verbo termina em consoante + y).
+
+A pronúncia do "-ed" muda conforme o som final do verbo: /t/ após sons surdos (worked, watched), /d/ após sons sonoros (played, cleaned) e /ɪd/ após "t" ou "d" (wanted, needed). Treinar essa diferença em voz alta evita um sotaque "robótico" muito comum entre estudantes.`,
+          `Verbos irregulares não seguem o padrão "-ed" e precisam ser memorizados aos poucos, com uso real — não decorando listas isoladas. Alguns dos mais frequentes: go → went, have → had, do → did, see → saw, eat → ate, make → made, take → took, come → came, give → gave, write → wrote.
+
+A estrutura de uma história simples no passado costuma seguir marcadores de tempo para guiar quem ouve: "First... / Then... / After that... / Finally...". Exemplo:
+
+"Last weekend, I went to the beach with my friends. First, we had breakfast at a café. Then, we swam in the sea for two hours. After that, we ate lunch at a restaurant near the beach. Finally, we watched the sunset before we went home."
+
+Praticar contar o próprio dia ou fim de semana usando esses conectores é um dos exercícios mais eficazes para fixar o Past Simple na fala.`
+        ]
+      },
+      {
+        title: "Chapter 4 — Future & Modal Verbs",
+        pages: [
+          `O inglês tem duas formas principais de falar sobre o futuro, e a diferença entre elas é sutil, mas importante. "Going to" é usado para planos já decididos antes do momento da fala: "I'm going to travel next month" (já decidi, já tenho passagem ou intenção firme). "Will" é usado para decisões espontâneas, promessas e previsões sem certeza absoluta: "I think it will rain tomorrow", "I'll help you with that" (decidido agora, na hora).
+
+Estrutura: "going to" precisa do verbo "to be" conjugado (am/is/are) + going to + verbo: "She is going to study abroad". "Will" não muda com a pessoa e é seguido direto do verbo: "I will call you later" (ou, na fala, "I'll call you later").`,
+          `Verbos modais expressam capacidade, possibilidade, permissão ou obrigação, e não variam conforme a pessoa (não levam "-s" na terceira pessoa). Os principais: can (capacidade/permissão no presente: "I can swim"), could (capacidade no passado ou pedido educado: "Could you help me?"), must (obrigação forte: "You must wear a seatbelt"), should (recomendação: "You should rest"), may/might (possibilidade: "It may rain later").
+
+Comparando intensidade de obrigação: "must" é mais forte e geralmente vem de uma regra externa ("You must have a passport to travel"); "should" é um conselho, não uma regra ("You should drink more water"). Essa diferença é um dos pontos que mais aparecem em provas de proficiência e em conversas reais no ambiente de trabalho.`
+        ]
+      },
+      {
+        title: "Chapter 5 — Phrasal Verbs & Idioms",
+        pages: [
+          `Phrasal verbs são combinações de verbo + preposição (ou advérbio) que, juntas, ganham um significado diferente do verbo isolado — e são extremamente comuns na fala cotidiana em inglês. Exemplos: "look for" (procurar, diferente de apenas "look" = olhar), "give up" (desistir), "find out" (descobrir), "get along (with)" (se dar bem com alguém), "turn off/on" (desligar/ligar), "run out of" (ficar sem algo: "We ran out of coffee").
+
+A melhor forma de aprender phrasal verbs não é decorar listas soltas, mas aprendê-los dentro de frases reais e revisá-los em contextos diferentes, até que o uso vire automático.`,
+          `Expressões idiomáticas (idioms) são frases cujo significado não é literal — não adianta traduzir palavra por palavra. Exemplos: "it's raining cats and dogs" (está chovendo muito), "break the ice" (quebrar o gelo, iniciar uma conversa), "piece of cake" (algo muito fácil), "hit the books" (estudar bastante).
+
+Vale também entender o registro (formalidade) das expressões: algumas são apropriadas só entre amigos ("What's up?"), outras funcionam em qualquer contexto ("How are you?"), e outras são tipicamente formais ou de e-mail profissional ("I hope this message finds you well"). Perceber esse contraste é o que diferencia um estudante intermediário de um falante avançado: não basta saber a regra, é preciso saber quando usá-la.`
+        ]
+      },
+      {
+        title: "Chapter 6 — Business English & Advanced Conversation",
+        pages: [
+          `Um e-mail profissional em inglês segue uma estrutura previsível: saudação ("Dear Mr. Smith," ou, mais informal, "Hi John,"), abertura de contexto ("I hope you are doing well." / "I am writing to follow up on..."), corpo direto e objetivo, e fechamento educado ("Looking forward to your reply." / "Best regards," / "Kind regards,").
+
+Frases úteis para e-mails de trabalho: "I would like to schedule a meeting to discuss..." (Gostaria de agendar uma reunião para discutir...), "Please find attached..." (Segue em anexo...), "Could you please confirm...?" (Você poderia confirmar...?), "Thank you for your attention." (Obrigado pela atenção).`,
+          `Fluência não é falar sem erros — é falar sem travar, conectando ideias de forma natural. Conectores avançados ajudam nisso: "however" (no entanto), "although" (embora), "in addition" (além disso), "as a result" (como resultado), "on the other hand" (por outro lado).
+
+Estratégias práticas para ganhar fluência: parafrasear quando não souber uma palavra exata, em vez de travar a frase ("a thing you use to open a bottle" no lugar de "opener", se esquecer a palavra); pensar em inglês ao narrar mentalmente tarefas simples do dia; e gravar a própria voz falando sobre um tema por um minuto, sem parar, mesmo cometendo erros — esse exercício, repetido com frequência, é um dos mais citados por quem realmente atinge fluência conversacional.`
+        ]
+      }
+    ]
+  },
+
+  // ============================================================
+  // 3) LÓGICA DE PROGRAMAÇÃO
+  // ============================================================
+  logica: {
+    title: "Lógica de Programação",
+    subtitle: "A base de qualquer linguagem de código",
+    tag: "Tecnologia",
+    color: "#c81e2c",
+    chapters: [
+      {
+        title: "Capítulo 1 — O que é Lógica de Programação",
+        pages: [
+          `Um algoritmo é uma sequência finita e ordenada de passos para resolver um problema. Você já segue algoritmos todos os dias sem perceber: uma receita de bolo é um algoritmo (separar ingredientes, misturar, assar por 40 minutos), assim como o caminho que você faz de casa até o trabalho. Programar é, basicamente, descrever um algoritmo de forma tão precisa que um computador — que não interpreta intenção, só instruções exatas — consiga executá-lo sem ambiguidade.
+
+Lógica de programação é o raciocínio por trás dessa descrição: a capacidade de quebrar um problema grande em passos pequenos, ordenados e testáveis. Ela é independente de linguagem — a mesma lógica pode depois ser escrita em Python, JavaScript, Java ou qualquer outra linguagem; o que muda é só a sintaxe.`,
+          `Antes de escrever código, é comum representar a lógica de duas formas. O fluxograma é um desenho com símbolos padronizados: óvalo para início/fim, retângulo para uma ação, losango para uma decisão (sim/não), e setas indicando a ordem de execução. Ele ajuda a visualizar o caminho do programa antes de codificar.
+
+O pseudocódigo é uma escrita livre, em português ou inglês simples, que descreve os passos quase como código, mas sem se prender à sintaxe de uma linguagem específica. Exemplo de pseudocódigo para decidir se um número é par:
+
+início
+  ler numero
+  se numero dividido por 2 tiver resto 0, então
+    escrever "par"
+  senão
+    escrever "ímpar"
+fim
+
+Esse mesmo pseudocódigo pode depois virar código real em qualquer linguagem, quase palavra por palavra.`
+        ]
+      },
+      {
+        title: "Capítulo 2 — Variáveis e Tipos de Dados",
+        pages: [
+          `Uma variável é um espaço nomeado na memória do computador onde um valor é guardado e pode ser alterado durante a execução do programa — daí o nome "variável". Pense nela como uma caixa com etiqueta: a etiqueta é o nome da variável (por exemplo, "idade"), e dentro da caixa fica o valor (por exemplo, 25).
+
+Os tipos de dados mais comuns em praticamente toda linguagem são: inteiro (números sem casas decimais, como 10 ou -3), real ou ponto flutuante (números com casas decimais, como 3.14), texto ou string (sequência de caracteres, como "Maria"), e booleano (apenas dois valores possíveis: verdadeiro ou falso). Escolher o tipo certo evita erros — por exemplo, não faz sentido somar "10" como texto com 5 como número sem antes converter um deles.`,
+          `Operadores são símbolos que realizam ações sobre valores e variáveis. Os operadores aritméticos fazem cálculos: + (soma), − (subtração), * (multiplicação), / (divisão), % (módulo, que retorna o resto de uma divisão — muito usado para verificar se um número é par ou ímpar).
+
+Os operadores relacionais comparam dois valores e retornam verdadeiro ou falso: == (igual a), != (diferente de), > (maior que), < (menor que), >= (maior ou igual), <= (menor ou igual). Os operadores lógicos combinam condições: E (todas as condições precisam ser verdadeiras), OU (pelo menos uma precisa ser verdadeira) e NÃO (inverte o valor lógico).
+
+Exemplo em pseudocódigo combinando os três tipos de operador:
+
+idade = 20
+salario = 1500
+se (idade >= 18) E (salario > 1000), então
+  escrever "elegível para o empréstimo"`
+        ]
+      },
+      {
+        title: "Capítulo 3 — Estruturas Condicionais",
+        pages: [
+          `Estruturas condicionais permitem que um programa tome decisões, executando blocos de código diferentes conforme uma condição seja verdadeira ou falsa. A estrutura mais básica é "se / então / senão": se a condição for verdadeira, executa um bloco; senão, executa outro.
+
+Exemplo prático — verificar se uma pessoa pode votar:
+
+ler idade
+se idade >= 16, então
+  escrever "pode votar"
+senão
+  escrever "não pode votar ainda"
+
+Note que a condição (idade >= 16) é avaliada uma única vez, e o programa segue por apenas um dos dois caminhos possíveis — nunca os dois ao mesmo tempo.`,
+          `Condicionais podem ser aninhadas (uma dentro da outra) quando há mais de duas possibilidades. Exemplo — classificar uma nota escolar:
+
+ler nota
+se nota >= 9, então
+  escrever "excelente"
+senão se nota >= 7, então
+  escrever "bom"
+senão se nota >= 5, então
+  escrever "regular"
+senão
+  escrever "insuficiente"
+
+Quando há muitas opções fixas e conhecidas (por exemplo, o dia da semana), muitas linguagens oferecem a estrutura switch/case, que costuma ser mais legível do que vários "senão se" encadeados. Boa prática: evite aninhar condicionais além de 2 ou 3 níveis — se a lógica ficar complexa demais, geralmente é sinal de que o problema pode ser quebrado em partes menores (o que o Capítulo 5 vai chamar de funções).`
+        ]
+      },
+      {
+        title: "Capítulo 4 — Estruturas de Repetição",
+        pages: [
+          `Estruturas de repetição (ou laços/loops) executam um bloco de código várias vezes, evitando repetir o mesmo código manualmente. O laço "para" (for) é usado quando já se sabe, de antemão, quantas vezes a repetição deve acontecer.
+
+Exemplo — escrever os números de 1 a 5:
+
+para i de 1 até 5, faça
+  escrever i
+
+Esse laço tem três partes implícitas: o valor inicial (i = 1), a condição de parada (i até 5) e o incremento (i aumenta 1 a cada repetição). É a estrutura ideal para percorrer listas, repetir uma ação um número fixo de vezes ou contar elementos.`,
+          `O laço "enquanto" (while) é usado quando não se sabe, de antemão, quantas repetições serão necessárias — a repetição continua enquanto uma condição permanecer verdadeira. Exemplo — pedir uma senha até o usuário acertar:
+
+senha = ""
+enquanto senha for diferente de "1234", faça
+  ler senha
+  se senha != "1234", então
+    escrever "senha incorreta, tente novamente"
+
+Existe também a variação "faça-enquanto" (do-while), que executa o bloco pelo menos uma vez antes de checar a condição — útil quando a primeira execução é obrigatória, como pedir a senha pela primeira vez antes de validar.
+
+Cuidado com loops infinitos: se a condição de parada nunca se tornar falsa (por exemplo, esquecer de atualizar a variável que controla o laço), o programa trava executando para sempre. Sempre que escrever um "enquanto", pergunte-se: "o que vai fazer essa condição eventualmente ser falsa?".`
+        ]
+      },
+      {
+        title: "Capítulo 5 — Vetores e Funções",
+        pages: [
+          `Um vetor (ou array) é uma estrutura que guarda vários valores do mesmo tipo sob um único nome, organizados em posições numeradas a partir do zero (o chamado índice). Em vez de criar cinco variáveis separadas para cinco notas, cria-se um único vetor:
+
+notas = [8, 7.5, 9, 6, 10]
+escrever notas[0]   // mostra 8 (primeira posição)
+escrever notas[2]   // mostra 9 (terceira posição)
+
+Vetores são quase sempre percorridos com um laço "para", porque o número de posições é conhecido (o "tamanho" do vetor):
+
+para i de 0 até tamanho(notas) − 1, faça
+  escrever notas[i]
+
+Esse padrão — vetor + laço — resolve a maioria dos problemas que envolvem listas de dados: somar valores, encontrar o maior ou o menor, contar quantos atendem a uma condição, entre outros.`,
+          `Uma função é um bloco de código nomeado, reutilizável, que recebe valores de entrada (parâmetros), executa uma tarefa e pode devolver um resultado (retorno). Funções existem para evitar repetir o mesmo código em vários lugares e para organizar um programa grande em partes menores e mais fáceis de entender — esse processo se chama modularização.
+
+Exemplo — uma função que calcula a média de duas notas:
+
+função media(nota1, nota2)
+  resultado = (nota1 + nota2) / 2
+  retornar resultado
+
+media1 = media(8, 6)     // resultado: 7
+media2 = media(10, 9)    // resultado: 9.5
+
+Cada chamada da função "media" reaproveita a mesma lógica, sem precisar reescrevê-la. Programas bem escritos costumam ter muitas funções pequenas, cada uma com uma única responsabilidade clara, em vez de um único bloco gigante de código fazendo tudo de uma vez.`
+        ]
+      },
+      {
+        title: "Capítulo 6 — Resolução de Problemas",
+        pages: [
+          `Resolver um problema de programação segue, na prática, sempre o mesmo roteiro: entender o problema (o que exatamente é pedido? quais são as entradas e a saída esperada?), planejar (rascunhar em pseudocódigo ou fluxograma antes de codificar), codificar (transformar o plano em código real, em pequenos passos testáveis) e testar (rodar o programa com diferentes entradas, incluindo casos extremos, para garantir que ele funciona em todas as situações, não só na mais óbvia).
+
+Pular a etapa de planejamento é o erro mais comum entre iniciantes: a pessoa tenta escrever código direto, sem saber exatamente onde quer chegar, e acaba travada. Vale sempre resolver o problema "no papel" primeiro, com um exemplo concreto de entrada e saída, antes de abrir o editor de código.`,
+          `Exercício guiado: encontrar o maior número em uma lista.
+
+Passo 1 — Entender: a entrada é uma lista de números; a saída é o maior valor dela.
+Passo 2 — Planejar: assumir que o primeiro número é o "maior até agora"; percorrer o restante da lista comparando cada número com esse valor; sempre que encontrar um número maior, atualizar o "maior até agora".
+Passo 3 — Pseudocódigo:
+
+numeros = [4, 9, 2, 17, 8]
+maior = numeros[0]
+para i de 1 até tamanho(numeros) − 1, faça
+  se numeros[i] > maior, então
+    maior = numeros[i]
+escrever maior   // resultado: 17
+
+Passo 4 — Testar: rodar com listas diferentes, incluindo uma lista com um único elemento e uma com números repetidos, para confirmar que a lógica se mantém correta em todos os casos.
+
+A partir daqui, os próximos passos naturais são aprender Programação Orientada a Objetos (organizar dados e funções dentro de "objetos" que representam coisas do mundo real) e escolher uma linguagem para praticar — Python costuma ser a mais recomendada para quem está começando, por sua sintaxe simples e próxima do pseudocódigo usado neste curso.`
+        ]
+      }
+    ]
+  },
+
+  // ============================================================
+  // 4) HTML + CSS (do básico ao avançado)
+  // ============================================================
+  htmlcss: {
+    title: "HTML + CSS",
+    subtitle: "Do básico ao avançado",
+    tag: "Tecnologia",
+    color: "#c81e2c",
+    chapters: [
+      {
+        title: "Capítulo 1 — Introdução à Web e HTML Básico",
+        pages: [
+          `Quando você acessa um site, o seu navegador (cliente) faz um pedido a um servidor, que devolve arquivos — principalmente HTML, CSS e JavaScript. O HTML (HyperText Markup Language) define a estrutura e o conteúdo da página: títulos, parágrafos, imagens, links. O CSS (Cascading Style Sheets) define a aparência: cores, espaçamentos, layout. O JavaScript, que fica fora do escopo deste curso, adiciona comportamento e interatividade.
+
+Todo documento HTML segue um esqueleto básico:
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Minha primeira página</title>
+</head>
+<body>
+  <h1>Olá, mundo!</h1>
+</body>
+</html>
+
+O <!DOCTYPE html> avisa ao navegador que o documento é HTML5. A tag <head> guarda metadados (informações sobre a página, não visíveis diretamente). A tag <body> guarda tudo o que aparece na tela.`,
+          `As tags mais usadas no dia a dia são: <h1> até <h6> para títulos (do mais importante ao menos importante), <p> para parágrafos, <a href="...">texto</a> para links, <img src="..." alt="..."> para imagens (sempre preencher o "alt" — é o texto alternativo, essencial para acessibilidade), <div> para agrupar conteúdo em blocos genéricos, e <span> para agrupar pequenos trechos de texto dentro de uma linha.
+
+Comentários em HTML ficam entre <!-- e -->, e não aparecem na página renderizada — servem para anotações no próprio código.
+
+Boas práticas desde o início: indentar o código de forma consistente (2 ou 4 espaços por nível), sempre fechar as tags que exigem fechamento (<p>...</p>), e dar nomes descritivos a classes e ids, em vez de nomes genéricos como "div1" ou "texto2".`
+        ]
+      },
+      {
+        title: "Capítulo 2 — HTML Semântico e Formulários",
+        pages: [
+          `Tags semânticas descrevem o significado de uma seção, não apenas sua aparência — o que ajuda navegadores, leitores de tela e mecanismos de busca a entender a página. As principais: <header> (cabeçalho da página ou de uma seção), <nav> (menu de navegação), <main> (conteúdo principal, único por página), <section> (uma seção temática de conteúdo), <article> (um conteúdo independente, como um post de blog), <aside> (conteúdo lateral, complementar) e <footer> (rodapé).
+
+Comparando: usar só <div> em tudo funciona visualmente, mas usar tags semânticas torna o código mais legível para outros desenvolvedores e mais acessível para quem usa leitores de tela — sem custo adicional de implementação.`,
+          `Formulários coletam dados do usuário e usam a tag <form>, que normalmente envolve campos de entrada. O <input> é o campo mais versátil, mudando de comportamento conforme o atributo "type": text (texto livre), email (valida formato de e-mail), password (oculta os caracteres), number, date, checkbox, radio, entre outros.
+
+Exemplo de um formulário simples:
+
+<form>
+  <label for="nome">Nome:</label>
+  <input type="text" id="nome" name="nome">
+
+  <label for="email">E-mail:</label>
+  <input type="email" id="email" name="email">
+
+  <button type="submit">Enviar</button>
+</form>
+
+A tag <label> associada ao "for" (que deve bater com o "id" do input) melhora a acessibilidade — clicar no texto do label foca automaticamente o campo. Tabelas, usadas para dados tabulares (não para layout), seguem a estrutura <table> > <tr> (linha) > <th> (cabeçalho) ou <td> (célula de dado).`
+        ]
+      },
+      {
+        title: "Capítulo 3 — CSS Básico",
+        pages: [
+          `CSS pode ser aplicado de três formas: inline (atributo "style" direto na tag, evitar exceto em testes rápidos), interno (dentro de uma tag <style> no <head>) e externo (em um arquivo .css separado, vinculado com <link rel="stylesheet" href="estilo.css">) — esta última é a prática recomendada, porque separa estrutura de aparência e permite reaproveitar o mesmo CSS em várias páginas.
+
+Seletores escolhem quais elementos receberão o estilo: por tag (p { ... } afeta todo parágrafo), por classe (.destaque { ... } afeta qualquer elemento com class="destaque", podendo ser reutilizada em vários elementos) e por id (#cabecalho { ... } afeta um único elemento específico, já que ids não se repetem na página). Quando há conflito entre seletores, vence o mais específico: id tem mais peso que classe, que tem mais peso que tag.`,
+          `Todo elemento HTML é, visualmente, uma caixa retangular — esse é o conceito de box model. De dentro para fora: content (o conteúdo em si, texto ou imagem), padding (espaço interno, entre o conteúdo e a borda), border (a borda da caixa) e margin (espaço externo, entre a caixa e os elementos vizinhos).
+
+div {
+  padding: 16px;
+  border: 1px solid #ccc;
+  margin: 24px;
+}
+
+Cores podem ser definidas por nome (red), hexadecimal (#c81e2c), rgb (rgb(200, 30, 44)) ou rgba (com transparência: rgba(200, 30, 44, 0.5)). Unidades de medida também variam: px é um valor fixo em pixels; % é relativo ao elemento pai; rem é relativo ao tamanho de fonte raiz do documento (geralmente 16px) e é a unidade recomendada para tipografia, porque respeita as preferências de acessibilidade do usuário.`
+        ]
+      },
+      {
+        title: "Capítulo 4 — Layout com Flexbox",
+        pages: [
+          `Flexbox é um modelo de layout pensado para distribuir elementos em uma única direção — linha ou coluna — de forma flexível, resolvendo problemas que antes exigiam gambiarras com float. Para ativar, basta definir display: flex no elemento pai; todos os filhos diretos automaticamente se tornam "itens flex".
+
+.container {
+  display: flex;
+  flex-direction: row; /* ou column */
+}
+
+O Flexbox trabalha com dois eixos: o eixo principal (definido por flex-direction) e o eixo transversal (perpendicular ao principal). justify-content alinha os itens ao longo do eixo principal (flex-start, center, space-between, space-around). align-items alinha os itens ao longo do eixo transversal (flex-start, center, stretch).`,
+          `flex-wrap: wrap permite que os itens quebrem para a próxima linha quando não cabem mais no espaço disponível — essencial para layouts responsivos. Já as propriedades flex-grow e flex-shrink controlam como cada item cresce ou encolhe para preencher o espaço disponível dentro do container.
+
+Exemplo prático — uma barra de menu com itens espaçados e um cartão centralizado:
+
+.menu {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cartoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+A propriedade gap define o espaçamento entre os itens flex sem precisar de margens manuais em cada um — uma das adições mais úteis do CSS moderno, hoje suportada por praticamente todos os navegadores.`
+        ]
+      },
+      {
+        title: "Capítulo 5 — Grid Layout e Responsividade",
+        pages: [
+          `Enquanto o Flexbox organiza elementos em uma única direção, o CSS Grid organiza em duas dimensões ao mesmo tempo — linhas e colunas — o que o torna ideal para layouts de página inteira.
+
+.pagina {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  grid-template-rows: auto 1fr auto;
+  gap: 20px;
+}
+
+Nesse exemplo, a página é dividida em duas colunas (a segunda três vezes mais larga que a primeira, graças à unidade "fr" — fração do espaço disponível) e três linhas (cabeçalho, conteúdo, rodapé). É possível ainda nomear áreas do grid com grid-template-areas, tornando o layout praticamente autoexplicativo no próprio CSS.`,
+          `Responsividade é a prática de fazer um layout se adaptar a diferentes tamanhos de tela — celular, tablet, desktop. A principal ferramenta para isso é a media query, que aplica um bloco de CSS apenas quando certas condições são atendidas:
+
+@media (max-width: 600px) {
+  .pagina {
+    grid-template-columns: 1fr;
+  }
+}
+
+A abordagem mobile-first define primeiro o estilo para telas pequenas e depois usa media queries para adicionar complexidade em telas maiores — geralmente resulta em CSS mais limpo do que o caminho inverso.
+
+Unidades responsivas também ajudam: vw e vh são relativas à largura/altura da janela do navegador; clamp(mínimo, ideal, máximo) permite que um valor (como o tamanho de uma fonte) cresça suavemente entre dois limites, sem precisar de várias media queries só para ajustar tipografia.`
+        ]
+      },
+      {
+        title: "Capítulo 6 — Avançado: Animações e Boas Práticas",
+        pages: [
+          `A propriedade transition anima a mudança de uma propriedade CSS ao longo do tempo, em vez de uma troca instantânea — muito usada em estados de hover (passar o mouse):
+
+.botao {
+  background: #c81e2c;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+.botao:hover {
+  background: #5c0e15;
+  transform: translateY(-2px);
+}
+
+Para animações mais elaboradas, com vários estágios, usa-se @keyframes em conjunto com animation:
+
+@keyframes pulsar {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+.cartao {
+  animation: pulsar 2s infinite ease-in-out;
+}
+
+A propriedade transform (translate, scale, rotate) é preferível a animar width/height/top/left diretamente, porque o navegador consegue renderizá-la com melhor desempenho.`,
+          `Variáveis CSS (custom properties) guardam valores reutilizáveis, declaradas geralmente em :root para ficarem disponíveis em toda a página:
+
+:root {
+  --cor-principal: #c81e2c;
+  --espacamento: 16px;
+}
+.botao {
+  background: var(--cor-principal);
+  padding: var(--espacamento);
+}
+
+Elas tornam temas (como modo escuro) muito mais simples de implementar — basta trocar o valor das variáveis em um único lugar.
+
+Para projetos maiores, vale conhecer pré-processadores como Sass, que adicionam recursos como variáveis aninhadas, mixins (blocos de CSS reutilizáveis) e funções — embora boa parte desses recursos já exista hoje em CSS puro.
+
+Por fim, três hábitos separam um projeto amador de um projeto profissional: organizar arquivos CSS por componente ou seção, em vez de um único arquivo gigante; testar a página em diferentes tamanhos de tela antes de considerar o trabalho concluído; e sempre verificar contraste de cores e o uso do atributo "alt" em imagens, garantindo que o site seja utilizável por todas as pessoas, incluindo quem usa leitores de tela.`
+        ]
+      }
+    ]
+  }
+
+};
+
+</script>
 <script>
   // ---------- load course ----------
   const params = new URLSearchParams(location.search);
