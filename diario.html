@@ -52,27 +52,19 @@
 
 <div class="saveStatus" id="saveStatus"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  const SUPABASE_URL = 'COLE_SUA_SUPABASE_URL_AQUI';
-  const SUPABASE_ANON_KEY = 'COLE_SUA_ANON_KEY_AQUI';
-  const configured = SUPABASE_URL.startsWith('http');
-  const supabase = configured ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+  const STORAGE_KEY = 'wakasa_diary_pages';
+  let pages = [], currentId = null, saveTimer = null;
 
-  let user = null, pages = [], currentId = null, saveTimer = null;
-
-  async function init(){
-    if (!configured){ document.getElementById('editorArea').innerHTML = '<div class="empty">Configure o Supabase no topo do script para usar o diário.</div>'; return; }
-    const { data } = await supabase.auth.getSession();
-    if (!data.session){ window.location.href = 'index.html'; return; }
-    user = data.session.user;
-    await loadPages();
+  function load(){
+    pages = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  }
+  function persist(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(pages));
   }
 
-  async function loadPages(){
-    const { data, error } = await supabase.from('diary_pages').select('*').eq('user_id', user.id).order('created_at', { ascending:false });
-    if (error){ console.error(error); return; }
-    pages = data || [];
+  function init(){
+    load();
     renderList();
   }
 
@@ -87,11 +79,12 @@
         if (e.target.classList.contains('del')) return;
         openPage(p.id);
       });
-      div.querySelector('.del').addEventListener('click', async (e) => {
+      div.querySelector('.del').addEventListener('click', (e) => {
         e.stopPropagation();
-        await supabase.from('diary_pages').delete().eq('id', p.id);
+        pages = pages.filter(x => x.id !== p.id);
+        persist();
         if (currentId === p.id) { currentId = null; document.getElementById('editorArea').innerHTML = '<div class="empty">Selecione uma página ou crie uma nova.</div>'; }
-        await loadPages();
+        renderList();
       });
       list.appendChild(div);
     });
@@ -103,7 +96,7 @@
     renderList();
     document.getElementById('editorArea').innerHTML = `
       <input id="pageTitle" value="${(p.title||'').replace(/"/g,'&quot;')}" placeholder="Título da página">
-      <div class="meta">Editado em ${new Date(p.updated_at || p.created_at).toLocaleString('pt-BR')}</div>
+      <div class="meta">Editado em ${new Date(p.updatedAt || p.createdAt).toLocaleString('pt-BR')}</div>
       <textarea id="pageBody" placeholder="Escreva aqui...">${p.body || ''}</textarea>
     `;
     document.getElementById('pageTitle').addEventListener('input', scheduleSave);
@@ -113,25 +106,27 @@
   function scheduleSave(){
     clearTimeout(saveTimer);
     document.getElementById('saveStatus').textContent = 'Salvando...';
-    saveTimer = setTimeout(savePage, 700);
+    saveTimer = setTimeout(savePage, 500);
   }
 
-  async function savePage(){
+  function savePage(){
     const title = document.getElementById('pageTitle').value;
     const body = document.getElementById('pageBody').value;
-    await supabase.from('diary_pages').update({ title, body, updated_at: new Date().toISOString() }).eq('id', currentId);
-    document.getElementById('saveStatus').textContent = 'Salvo';
     const p = pages.find(x => x.id === currentId);
-    if (p) { p.title = title; p.body = body; }
+    if (p) { p.title = title; p.body = body; p.updatedAt = new Date().toISOString(); }
+    persist();
+    document.getElementById('saveStatus').textContent = 'Salvo';
     renderList();
-    setTimeout(() => document.getElementById('saveStatus').textContent = '', 1500);
+    setTimeout(() => document.getElementById('saveStatus').textContent = '', 1200);
   }
 
-  document.getElementById('newPageBtn').addEventListener('click', async () => {
-    const { data, error } = await supabase.from('diary_pages').insert({ user_id: user.id, title: 'Nova página', body: '' }).select().single();
-    if (error){ alert(error.message); return; }
-    await loadPages();
-    openPage(data.id);
+  document.getElementById('newPageBtn').addEventListener('click', () => {
+    const id = crypto.randomUUID();
+    const now = new Date().toISOString();
+    pages.unshift({ id, title: 'Nova página', body: '', createdAt: now, updatedAt: now });
+    persist();
+    renderList();
+    openPage(id);
   });
 
   init();
