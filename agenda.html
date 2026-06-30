@@ -48,26 +48,20 @@
   <div class="eventList" id="eventList"></div>
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  const SUPABASE_URL = 'COLE_SUA_SUPABASE_URL_AQUI';
-  const SUPABASE_ANON_KEY = 'COLE_SUA_ANON_KEY_AQUI';
-  const configured = SUPABASE_URL.startsWith('http');
-  const supabase = configured ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
-  let user = null, events = [];
+  const STORAGE_KEY = 'wakasa_agenda_events';
+  let events = [];
 
-  async function init(){
-    if (!configured){ document.getElementById('eventList').innerHTML = '<div class="empty">Configure o Supabase no topo do script para usar a agenda.</div>'; return; }
-    const { data } = await supabase.auth.getSession();
-    if (!data.session){ window.location.href = 'index.html'; return; }
-    user = data.session.user;
-    await load();
+  function load(){
+    events = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    events.sort((a,b) => (a.eventDate || '').localeCompare(b.eventDate || ''));
+  }
+  function persist(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
   }
 
-  async function load(){
-    const { data, error } = await supabase.from('agenda_events').select('*').eq('user_id', user.id).order('event_date', { ascending:true });
-    if (error){ console.error(error); return; }
-    events = data || [];
+  function init(){
+    load();
     render();
   }
 
@@ -78,34 +72,34 @@
     events.forEach(ev => {
       const div = document.createElement('div');
       div.className = 'event' + (ev.done ? ' done' : '');
-      const d = ev.event_date ? new Date(ev.event_date + 'T00:00:00').toLocaleDateString('pt-BR') : '';
+      const d = ev.eventDate ? new Date(ev.eventDate + 'T00:00:00').toLocaleDateString('pt-BR') : '';
       div.innerHTML = `
         <div class="event-left">
-          <input type="checkbox" ${ev.done ? 'checked' : ''} data-id="${ev.id}">
+          <input type="checkbox" ${ev.done ? 'checked' : ''}>
           <span class="edate">${d}</span>
           <span class="etitle">${ev.title}</span>
         </div>
-        <span class="del" data-id="${ev.id}">✕</span>
+        <span class="del">✕</span>
       `;
-      div.querySelector('input').addEventListener('change', async (e) => {
-        await supabase.from('agenda_events').update({ done: e.target.checked }).eq('id', ev.id);
-        ev.done = e.target.checked; render();
+      div.querySelector('input').addEventListener('change', (e) => {
+        ev.done = e.target.checked; persist(); render();
       });
-      div.querySelector('.del').addEventListener('click', async () => {
-        await supabase.from('agenda_events').delete().eq('id', ev.id);
-        await load();
+      div.querySelector('.del').addEventListener('click', () => {
+        events = events.filter(x => x.id !== ev.id);
+        persist(); render();
       });
       list.appendChild(div);
     });
   }
 
-  document.getElementById('addBtn').addEventListener('click', async () => {
+  document.getElementById('addBtn').addEventListener('click', () => {
     const date = document.getElementById('newDate').value;
     const title = document.getElementById('newTitle').value.trim();
     if (!title) return;
-    await supabase.from('agenda_events').insert({ user_id: user.id, title, event_date: date || null, done:false });
+    events.push({ id: crypto.randomUUID(), title, eventDate: date || null, done:false });
+    load(); persist();
     document.getElementById('newTitle').value = '';
-    await load();
+    render();
   });
 
   init();
