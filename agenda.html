@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agenda — Wakasa Hub</title>
+<style>
+  :root{ --bg:#0a0a0c; --panel:#111114; --line:#232327; --text:#f2f0ee; --muted:#8a8a90; --accent:#c81e2c; }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{ background:var(--bg); color:var(--text); font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; min-height:100vh; }
+  header{ display:flex; align-items:center; justify-content:space-between; padding:28px 5vw; border-bottom:1px solid var(--line); }
+  header a{ color:var(--muted); text-decoration:none; font-size:13px; letter-spacing:0.08em; text-transform:uppercase; }
+  header a:hover{ color:var(--accent); }
+  .eyebrow{ font-size:12px; letter-spacing:0.18em; text-transform:uppercase; color:var(--accent); font-weight:600; display:flex; align-items:center; gap:8px; }
+  .eyebrow::before{ content:''; width:18px; height:1px; background:var(--accent); }
+  main{ max-width:780px; margin:0 auto; padding:48px 5vw; }
+  h1{ font-size:38px; font-weight:800; margin-bottom:32px; }
+  .addRow{ display:flex; gap:10px; margin-bottom:36px; flex-wrap:wrap; }
+  .addRow input{ background:var(--panel); border:1px solid var(--line); color:var(--text); padding:12px 14px; border-radius:6px; font-family:inherit; font-size:14px; }
+  .addRow input[type="text"]{ flex:1; min-width:160px; }
+  .addRow button{ background:var(--accent); color:#fff; border:none; padding:12px 22px; border-radius:6px; cursor:pointer; font-weight:700; font-family:inherit; }
+  .eventList{ display:flex; flex-direction:column; gap:10px; }
+  .event{ background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:16px 18px; display:flex; align-items:center; justify-content:space-between; gap:14px; }
+  .event.done{ opacity:0.45; }
+  .event.done .etitle{ text-decoration:line-through; }
+  .event-left{ display:flex; align-items:center; gap:14px; }
+  .event input[type="checkbox"]{ width:18px; height:18px; accent-color:var(--accent); }
+  .edate{ font-size:12px; color:var(--accent); font-weight:700; min-width:90px; }
+  .etitle{ font-size:15px; }
+  .del{ color:#54545a; cursor:pointer; font-size:13px; }
+  .del:hover{ color:var(--accent); }
+  .empty{ color:var(--muted); padding:40px 0; text-align:center; }
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">Agenda</div>
+  <a href="index.html">← Voltar ao hub</a>
+</header>
+
+<main>
+  <h1>Compromissos</h1>
+  <div class="addRow">
+    <input type="date" id="newDate">
+    <input type="text" id="newTitle" placeholder="O que você precisa fazer?">
+    <button id="addBtn">Adicionar</button>
+  </div>
+  <div class="eventList" id="eventList"></div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = 'COLE_SUA_SUPABASE_URL_AQUI';
+  const SUPABASE_ANON_KEY = 'COLE_SUA_ANON_KEY_AQUI';
+  const configured = SUPABASE_URL.startsWith('http');
+  const supabase = configured ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+  let user = null, events = [];
+
+  async function init(){
+    if (!configured){ document.getElementById('eventList').innerHTML = '<div class="empty">Configure o Supabase no topo do script para usar a agenda.</div>'; return; }
+    const { data } = await supabase.auth.getSession();
+    if (!data.session){ window.location.href = 'index.html'; return; }
+    user = data.session.user;
+    await load();
+  }
+
+  async function load(){
+    const { data, error } = await supabase.from('agenda_events').select('*').eq('user_id', user.id).order('event_date', { ascending:true });
+    if (error){ console.error(error); return; }
+    events = data || [];
+    render();
+  }
+
+  function render(){
+    const list = document.getElementById('eventList');
+    if (events.length === 0){ list.innerHTML = '<div class="empty">Nada por aqui ainda.</div>'; return; }
+    list.innerHTML = '';
+    events.forEach(ev => {
+      const div = document.createElement('div');
+      div.className = 'event' + (ev.done ? ' done' : '');
+      const d = ev.event_date ? new Date(ev.event_date + 'T00:00:00').toLocaleDateString('pt-BR') : '';
+      div.innerHTML = `
+        <div class="event-left">
+          <input type="checkbox" ${ev.done ? 'checked' : ''} data-id="${ev.id}">
+          <span class="edate">${d}</span>
+          <span class="etitle">${ev.title}</span>
+        </div>
+        <span class="del" data-id="${ev.id}">✕</span>
+      `;
+      div.querySelector('input').addEventListener('change', async (e) => {
+        await supabase.from('agenda_events').update({ done: e.target.checked }).eq('id', ev.id);
+        ev.done = e.target.checked; render();
+      });
+      div.querySelector('.del').addEventListener('click', async () => {
+        await supabase.from('agenda_events').delete().eq('id', ev.id);
+        await load();
+      });
+      list.appendChild(div);
+    });
+  }
+
+  document.getElementById('addBtn').addEventListener('click', async () => {
+    const date = document.getElementById('newDate').value;
+    const title = document.getElementById('newTitle').value.trim();
+    if (!title) return;
+    await supabase.from('agenda_events').insert({ user_id: user.id, title, event_date: date || null, done:false });
+    document.getElementById('newTitle').value = '';
+    await load();
+  });
+
+  init();
+</script>
+</body>
+</html>

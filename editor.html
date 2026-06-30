@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Editor — Wakasa Hub</title>
+<style>
+  :root{ --bg:#0a0a0c; --panel:#111114; --line:#232327; --text:#f2f0ee; --muted:#8a8a90; --accent:#c81e2c; }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{ background:var(--bg); color:var(--text); font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; min-height:100vh; }
+  header{ display:flex; align-items:center; justify-content:space-between; padding:18px 5vw; border-bottom:1px solid var(--line); }
+  header a{ color:var(--muted); text-decoration:none; font-size:13px; letter-spacing:0.08em; text-transform:uppercase; }
+  header a:hover{ color:var(--accent); }
+  .eyebrow{ font-size:12px; letter-spacing:0.18em; text-transform:uppercase; color:var(--accent); font-weight:600; display:flex; align-items:center; gap:8px; }
+  .eyebrow::before{ content:''; width:18px; height:1px; background:var(--accent); }
+  .toolbar{ display:flex; gap:10px; align-items:center; }
+  select, button{ font-family:inherit; }
+  select{ background:var(--panel); color:var(--text); border:1px solid var(--line); padding:8px 10px; border-radius:6px; font-size:13px; }
+  button.run{ background:var(--accent); color:#fff; border:none; padding:9px 20px; border-radius:6px; cursor:pointer; font-weight:700; font-size:13px; }
+  .ide{ display:grid; grid-template-rows:1fr 220px; height:calc(100vh - 65px); }
+  #codeArea{ width:100%; height:100%; background:#0d0d10; color:#e8e6e3; border:none; resize:none;
+    font-family:'SFMono-Regular',Consolas,'Courier New',monospace; font-size:14px; line-height:1.7; padding:24px 5vw; tab-size:2; }
+  #codeArea:focus{ outline:none; }
+  .console{ border-top:1px solid var(--line); background:var(--panel); padding:14px 5vw; overflow-y:auto; font-family:Consolas,monospace; font-size:13px; }
+  .console .label{ color:var(--muted); font-size:11px; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:8px; }
+  .console .line{ padding:2px 0; color:#d6d6d6; white-space:pre-wrap; }
+  .console .line.err{ color:var(--accent); }
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">Editor de código</div>
+  <div class="toolbar">
+    <select id="lang">
+      <option value="js">JavaScript (executa aqui)</option>
+      <option value="html">HTML (renderiza ao lado)</option>
+    </select>
+    <button class="run" id="runBtn">▶ Rodar</button>
+    <a href="index.html">← Hub</a>
+  </div>
+</header>
+
+<div class="ide">
+  <textarea id="codeArea" spellcheck="false">// Escreva seu código aqui
+function soma(a, b) {
+  return a + b;
+}
+console.log("Resultado:", soma(2, 3));
+</textarea>
+  <div class="console" id="console">
+    <div class="label">Console / Debug</div>
+  </div>
+</div>
+
+<script>
+  const codeArea = document.getElementById('codeArea');
+  const consoleEl = document.getElementById('console');
+  const runBtn = document.getElementById('runBtn');
+  const langSel = document.getElementById('lang');
+
+  function logLine(text, isErr){
+    const div = document.createElement('div');
+    div.className = 'line' + (isErr ? ' err' : '');
+    div.textContent = text;
+    consoleEl.appendChild(div);
+    consoleEl.scrollTop = consoleEl.scrollHeight;
+  }
+
+  function clearConsole(){
+    consoleEl.innerHTML = '<div class="label">Console / Debug</div>';
+  }
+
+  function runJS(code){
+    clearConsole();
+    const fakeConsole = {
+      log: (...args) => logLine(args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ')),
+      error: (...args) => logLine(args.join(' '), true)
+    };
+    try {
+      const fn = new Function('console', code);
+      fn(fakeConsole);
+      logLine('✓ Execução concluída sem erros.');
+    } catch (err) {
+      logLine('✗ ' + err.message, true);
+    }
+  }
+
+  function runHTML(code){
+    clearConsole();
+    let win = document.getElementById('previewFrame');
+    if (!win){
+      win = document.createElement('iframe');
+      win.id = 'previewFrame';
+      win.style.width = '100%';
+      win.style.height = '300px';
+      win.style.border = '1px solid #232327';
+      win.style.marginTop = '10px';
+      consoleEl.appendChild(win);
+    }
+    win.srcdoc = code;
+    logLine('✓ Pré-visualização renderizada abaixo.');
+  }
+
+  runBtn.addEventListener('click', () => {
+    const code = codeArea.value;
+    if (langSel.value === 'js') runJS(code);
+    else runHTML(code);
+  });
+
+  // Atalho Ctrl+Enter para rodar
+  codeArea.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab'){
+      e.preventDefault();
+      const start = codeArea.selectionStart, end = codeArea.selectionEnd;
+      codeArea.value = codeArea.value.substring(0, start) + '  ' + codeArea.value.substring(end);
+      codeArea.selectionStart = codeArea.selectionEnd = start + 2;
+    }
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter'){ runBtn.click(); }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mascote — Wakasa Hub</title>
+<style>
+  :root{ --bg:#0a0a0c; --panel:#111114; --line:#232327; --text:#f2f0ee; --muted:#8a8a90; --accent:#c81e2c; }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{ background:var(--bg); color:var(--text); font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; min-height:100vh; }
+  header{ display:flex; align-items:center; justify-content:space-between; padding:28px 5vw; border-bottom:1px solid var(--line); }
+  header a{ color:var(--muted); text-decoration:none; font-size:13px; letter-spacing:0.08em; text-transform:uppercase; }
+  header a:hover{ color:var(--accent); }
+  .eyebrow{ font-size:12px; letter-spacing:0.18em; text-transform:uppercase; color:var(--accent); font-weight:600; display:flex; align-items:center; gap:8px; }
+  .eyebrow::before{ content:''; width:18px; height:1px; background:var(--accent); }
+  main{ max-width:560px; margin:0 auto; padding:60px 5vw; text-align:center; }
+  #mascot{ width:140px; height:140px; margin:0 auto 28px; }
+  h1{ font-size:30px; font-weight:800; margin-bottom:8px; }
+  .sub{ color:var(--muted); font-size:14px; margin-bottom:36px; }
+  .chat{ background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:20px; text-align:left; min-height:160px; max-height:300px; overflow-y:auto; margin-bottom:14px; }
+  .bubble{ font-size:14px; margin-bottom:10px; line-height:1.5; }
+  .bubble.bot{ color:var(--text); }
+  .bubble.user{ color:var(--accent); text-align:right; }
+  .row{ display:flex; gap:10px; }
+  .row input{ flex:1; background:var(--panel); border:1px solid var(--line); color:var(--text); padding:12px 14px; border-radius:6px; font-family:inherit; }
+  .row button{ background:var(--accent); color:#fff; border:none; padding:12px 20px; border-radius:6px; cursor:pointer; font-weight:700; font-family:inherit; }
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">Mascote</div>
+  <a href="index.html">← Voltar ao hub</a>
+</header>
+
+<main>
+  <svg id="mascot" viewBox="0 0 140 140">
+    <polygon points="70,10 125,40 125,100 70,130 15,100 15,40" fill="#15151a" stroke="#c81e2c" stroke-width="2"/>
+    <polygon points="70,35 105,52 105,88 70,105 35,88 35,52" fill="#c81e2c" opacity="0.18"/>
+    <circle cx="55" cy="65" r="5" fill="#c81e2c"/>
+    <circle cx="85" cy="65" r="5" fill="#c81e2c"/>
+    <path d="M 55 85 Q 70 95 85 85" stroke="#c81e2c" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  </svg>
+  <h1>Faceta</h1>
+  <p class="sub">Mascote low-poly exclusivo do hub.</p>
+
+  <div class="chat" id="chat">
+    <div class="bubble bot">Oi! Eu sou a Faceta. Pode me perguntar algo sobre o hub.</div>
+  </div>
+  <div class="row">
+    <input id="msgInput" placeholder="Fala comigo...">
+    <button id="sendBtn">Enviar</button>
+  </div>
+</main>
+
+<script>
+  const chat = document.getElementById('chat');
+  const input = document.getElementById('msgInput');
+
+  const replies = [
+    { match: /diário|diario/i, text: 'O diário fica no menu principal — você pode criar quantas páginas quiser.' },
+    { match: /agenda/i, text: 'Na agenda você marca compromissos com data e marca como feito quando concluir.' },
+    { match: /bot/i, text: 'Os bots Discord precisam de um servidor próprio rodando 24h — o painel mostra o status deles.' },
+    { match: /editor|código|codigo/i, text: 'O editor roda JavaScript direto no navegador, com console de debug embutido.' },
+    { match: /oi|olá|ola/i, text: 'Oi! Em que posso ajudar por aqui?' }
+  ];
+
+  function addBubble(text, cls){
+    const div = document.createElement('div');
+    div.className = 'bubble ' + cls;
+    div.textContent = text;
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  function respond(msg){
+    const found = replies.find(r => r.match.test(msg));
+    return found ? found.text : 'Ainda não sei responder isso, mas estou aprendendo!';
+  }
+
+  function send(){
+    const val = input.value.trim();
+    if (!val) return;
+    addBubble(val, 'user');
+    input.value = '';
+    setTimeout(() => addBubble(respond(val), 'bot'), 300);
+  }
+
+  document.getElementById('sendBtn').addEventListener('click', send);
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
+</script>
+</body>
+</html>

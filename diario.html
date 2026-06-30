@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diário — Wakasa Hub</title>
+<style>
+  :root{ --bg:#0a0a0c; --panel:#111114; --line:#232327; --text:#f2f0ee; --muted:#8a8a90; --accent:#c81e2c; }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{ background:var(--bg); color:var(--text); font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; min-height:100vh; }
+  header{ display:flex; align-items:center; justify-content:space-between; padding:28px 5vw; border-bottom:1px solid var(--line); }
+  header a{ color:var(--muted); text-decoration:none; font-size:13px; letter-spacing:0.08em; text-transform:uppercase; }
+  header a:hover{ color:var(--accent); }
+  .eyebrow{ font-size:12px; letter-spacing:0.18em; text-transform:uppercase; color:var(--accent); font-weight:600; display:flex; align-items:center; gap:8px; }
+  .eyebrow::before{ content:''; width:18px; height:1px; background:var(--accent); }
+  .layout{ display:grid; grid-template-columns:260px 1fr; min-height:calc(100vh - 80px); }
+  .sidebar{ border-right:1px solid var(--line); padding:24px; }
+  .sidebar h2{ font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:16px; }
+  #pageList{ display:flex; flex-direction:column; gap:4px; }
+  .pageItem{ display:flex; justify-content:space-between; align-items:center; padding:10px 12px; border-radius:6px; cursor:pointer; font-size:14px; color:var(--text); }
+  .pageItem:hover{ background:var(--panel); }
+  .pageItem.active{ background:var(--panel); border-left:2px solid var(--accent); }
+  .pageItem .del{ color:#54545a; font-size:12px; }
+  .pageItem .del:hover{ color:var(--accent); }
+  button.newBtn{ width:100%; margin-top:14px; background:var(--accent); color:#fff; border:none; padding:10px; border-radius:6px; cursor:pointer; font-weight:700; font-size:13px; font-family:inherit; }
+  .editorArea{ padding:40px 6vw; }
+  input#pageTitle{ width:100%; background:none; border:none; font-size:32px; font-weight:800; color:var(--text); font-family:inherit; margin-bottom:8px; }
+  input#pageTitle:focus{ outline:none; }
+  .meta{ color:var(--muted); font-size:12px; margin-bottom:24px; }
+  textarea#pageBody{ width:100%; min-height:60vh; background:none; border:none; color:var(--text); font-size:16px; line-height:1.8; font-family:'Inter',sans-serif; resize:vertical; }
+  textarea#pageBody:focus{ outline:none; }
+  .saveStatus{ position:fixed; bottom:24px; right:5vw; font-size:12px; color:var(--muted); }
+  .empty{ color:var(--muted); padding:60px; text-align:center; }
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">Diário digital</div>
+  <a href="index.html">← Voltar ao hub</a>
+</header>
+
+<div class="layout">
+  <div class="sidebar">
+    <h2>Páginas</h2>
+    <div id="pageList"></div>
+    <button class="newBtn" id="newPageBtn">+ Nova página</button>
+  </div>
+  <div class="editorArea" id="editorArea">
+    <div class="empty">Selecione uma página ou crie uma nova.</div>
+  </div>
+</div>
+
+<div class="saveStatus" id="saveStatus"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = 'COLE_SUA_SUPABASE_URL_AQUI';
+  const SUPABASE_ANON_KEY = 'COLE_SUA_ANON_KEY_AQUI';
+  const configured = SUPABASE_URL.startsWith('http');
+  const supabase = configured ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+  let user = null, pages = [], currentId = null, saveTimer = null;
+
+  async function init(){
+    if (!configured){ document.getElementById('editorArea').innerHTML = '<div class="empty">Configure o Supabase no topo do script para usar o diário.</div>'; return; }
+    const { data } = await supabase.auth.getSession();
+    if (!data.session){ window.location.href = 'index.html'; return; }
+    user = data.session.user;
+    await loadPages();
+  }
+
+  async function loadPages(){
+    const { data, error } = await supabase.from('diary_pages').select('*').eq('user_id', user.id).order('created_at', { ascending:false });
+    if (error){ console.error(error); return; }
+    pages = data || [];
+    renderList();
+  }
+
+  function renderList(){
+    const list = document.getElementById('pageList');
+    list.innerHTML = '';
+    pages.forEach(p => {
+      const div = document.createElement('div');
+      div.className = 'pageItem' + (p.id === currentId ? ' active' : '');
+      div.innerHTML = `<span>${p.title || 'Sem título'}</span><span class="del" data-id="${p.id}">✕</span>`;
+      div.addEventListener('click', (e) => {
+        if (e.target.classList.contains('del')) return;
+        openPage(p.id);
+      });
+      div.querySelector('.del').addEventListener('click', async (e) => {
+        e.stopPropagation();
+        await supabase.from('diary_pages').delete().eq('id', p.id);
+        if (currentId === p.id) { currentId = null; document.getElementById('editorArea').innerHTML = '<div class="empty">Selecione uma página ou crie uma nova.</div>'; }
+        await loadPages();
+      });
+      list.appendChild(div);
+    });
+  }
+
+  function openPage(id){
+    currentId = id;
+    const p = pages.find(x => x.id === id);
+    renderList();
+    document.getElementById('editorArea').innerHTML = `
+      <input id="pageTitle" value="${(p.title||'').replace(/"/g,'&quot;')}" placeholder="Título da página">
+      <div class="meta">Editado em ${new Date(p.updated_at || p.created_at).toLocaleString('pt-BR')}</div>
+      <textarea id="pageBody" placeholder="Escreva aqui...">${p.body || ''}</textarea>
+    `;
+    document.getElementById('pageTitle').addEventListener('input', scheduleSave);
+    document.getElementById('pageBody').addEventListener('input', scheduleSave);
+  }
+
+  function scheduleSave(){
+    clearTimeout(saveTimer);
+    document.getElementById('saveStatus').textContent = 'Salvando...';
+    saveTimer = setTimeout(savePage, 700);
+  }
+
+  async function savePage(){
+    const title = document.getElementById('pageTitle').value;
+    const body = document.getElementById('pageBody').value;
+    await supabase.from('diary_pages').update({ title, body, updated_at: new Date().toISOString() }).eq('id', currentId);
+    document.getElementById('saveStatus').textContent = 'Salvo';
+    const p = pages.find(x => x.id === currentId);
+    if (p) { p.title = title; p.body = body; }
+    renderList();
+    setTimeout(() => document.getElementById('saveStatus').textContent = '', 1500);
+  }
+
+  document.getElementById('newPageBtn').addEventListener('click', async () => {
+    const { data, error } = await supabase.from('diary_pages').insert({ user_id: user.id, title: 'Nova página', body: '' }).select().single();
+    if (error){ alert(error.message); return; }
+    await loadPages();
+    openPage(data.id);
+  });
+
+  init();
+</script>
+</body>
+</html>

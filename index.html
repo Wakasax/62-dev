@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wakasa Hub</title>
+<style>
+  :root{
+    --bg:#0a0a0c; --panel:#111114; --line:#232327; --text:#f2f0ee;
+    --muted:#8a8a90; --accent:#c81e2c; --accent-dim:#5c0e15;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;}
+  body{ background:var(--bg); color:var(--text); font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; -webkit-font-smoothing:antialiased; min-height:100vh; }
+  canvas#mesh{ position:fixed; inset:0; width:100%; height:100%; z-index:0; opacity:0.5; }
+  .glow{ position:fixed; top:50%; left:72%; width:680px; height:680px; transform:translate(-50%,-50%);
+    background:radial-gradient(circle, var(--accent) 0%, var(--accent-dim) 35%, transparent 70%);
+    filter:blur(40px); opacity:0.32; z-index:0; pointer-events:none; }
+
+  /* ---------- shared brand/header ---------- */
+  .brand{ position:fixed; top:36px; left:8vw; display:flex; align-items:center; gap:10px; z-index:3; }
+  .brand svg{ width:26px; height:26px; }
+  .brand span{ font-size:13px; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); font-weight:600; }
+  .logout{ position:fixed; top:32px; right:8vw; z-index:3; background:none; border:1px solid var(--line); color:var(--muted);
+    padding:9px 16px; border-radius:6px; font-size:12px; cursor:pointer; font-family:inherit; letter-spacing:0.04em; }
+  .logout:hover{ border-color:var(--accent); color:var(--text); }
+
+  /* ---------- LOGIN VIEW ---------- */
+  #loginView{ position:relative; z-index:1; height:100vh; display:flex; align-items:center; padding:0 8vw; }
+  .card{ width:100%; max-width:420px; }
+  .eyebrow{ font-size:12px; letter-spacing:0.18em; text-transform:uppercase; color:var(--accent); font-weight:600;
+    margin-bottom:18px; display:flex; align-items:center; gap:8px; }
+  .eyebrow::before{ content:''; width:18px; height:1px; background:var(--accent); display:inline-block; }
+  h1{ font-size:54px; font-weight:800; line-height:1.02; letter-spacing:-0.02em; margin-bottom:14px; }
+  h1 em{ color:var(--accent); font-style:normal; }
+  .sub{ color:var(--muted); font-size:15px; line-height:1.6; margin-bottom:40px; max-width:360px; }
+  .field{ margin-bottom:16px; }
+  .field label{ display:block; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted);
+    margin-bottom:8px; font-weight:600; }
+  .field input{ width:100%; background:var(--panel); border:1px solid var(--line); color:var(--text);
+    padding:14px 16px; font-size:14px; border-radius:6px; font-family:inherit; transition:border-color .2s, background .2s; }
+  .field input:focus{ outline:none; border-color:var(--accent); background:#15151a; }
+  .field input::placeholder{ color:#54545a; }
+  .actions{ display:flex; align-items:center; gap:16px; margin-top:28px; }
+  button.primary{ background:var(--accent); color:#fff; border:none; padding:14px 28px; font-size:14px; font-weight:700;
+    letter-spacing:0.02em; border-radius:6px; cursor:pointer; transition:background .2s, transform .15s; font-family:inherit; }
+  button.primary:hover{ background:#e0222f; transform:translateY(-1px); }
+  button.primary:disabled{ opacity:0.5; cursor:not-allowed; transform:none; }
+  .toggle{ background:none; border:none; color:var(--muted); font-size:13px; cursor:pointer; text-decoration:underline;
+    text-decoration-color:var(--line); font-family:inherit; padding:0; }
+  .toggle:hover{ color:var(--text); }
+  .msg{ margin-top:18px; font-size:13px; min-height:18px; color:var(--muted); }
+  .msg.error{ color:var(--accent); }
+  .msg.ok{ color:#5fcf7a; }
+
+  /* ---------- DASHBOARD VIEW ---------- */
+  #dashView{ display:none; position:relative; z-index:1; min-height:100vh; padding:140px 8vw 80px; }
+  .dash-eyebrow{ font-size:12px; letter-spacing:0.18em; text-transform:uppercase; color:var(--accent); font-weight:600;
+    margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+  .dash-eyebrow::before{ content:''; width:18px; height:1px; background:var(--accent); display:inline-block; }
+  #dashView h1{ font-size:46px; margin-bottom:48px; }
+  .grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:18px; }
+  .mod{ background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:28px;
+    text-decoration:none; color:var(--text); display:block; transition:border-color .2s, transform .15s, background .2s; position:relative; overflow:hidden; }
+  .mod:hover{ border-color:var(--accent); transform:translateY(-3px); background:#15151a; }
+  .mod .num{ font-size:11px; color:var(--muted); letter-spacing:0.1em; margin-bottom:18px; display:block; }
+  .mod h3{ font-size:20px; font-weight:700; margin-bottom:8px; }
+  .mod p{ font-size:13px; color:var(--muted); line-height:1.5; }
+  .mod .arrow{ position:absolute; top:24px; right:24px; color:var(--accent); font-size:18px; opacity:0.6; transition:transform .2s; }
+  .mod:hover .arrow{ transform:translate(3px,-3px); }
+  .footer-note{ position:fixed; bottom:32px; left:8vw; right:8vw; display:flex; justify-content:space-between;
+    color:#4a4a50; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; z-index:2; pointer-events:none; }
+  @media (max-width:640px){
+    .wrap, #loginView, #dashView{ padding-left:6vw; padding-right:6vw; }
+    h1{ font-size:36px; }
+    #dashView h1{ font-size:32px; }
+    .glow{ left:50%; opacity:0.22; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="mesh"></canvas>
+<div class="glow"></div>
+
+<div class="brand">
+  <svg viewBox="0 0 24 24" fill="none"><polygon points="12,2 22,8 22,16 12,22 2,16 2,8" stroke="#c81e2c" stroke-width="1.4"/><polygon points="12,7 17,10 17,14 12,17 7,14 7,10" fill="#c81e2c" opacity="0.6"/></svg>
+  <span>Wakasa Hub</span>
+</div>
+<button class="logout" id="logoutBtn" style="display:none;">Sair</button>
+
+<!-- ============ LOGIN ============ -->
+<div id="loginView">
+  <div class="card">
+    <div class="eyebrow">Acesso restrito</div>
+    <h1 id="title">Entrar no <em>hub</em></h1>
+    <p class="sub" id="subtitle">Este espaço é privado. Faça login para acessar seus sistemas, bots, diário e agenda.</p>
+
+    <form id="authForm">
+      <div class="field">
+        <label for="email">E-mail</label>
+        <input type="email" id="email" placeholder="seu@email.com" required autocomplete="email">
+      </div>
+      <div class="field">
+        <label for="password">Senha</label>
+        <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password" minlength="6">
+      </div>
+      <div class="actions">
+        <button type="submit" class="primary" id="submitBtn">Entrar</button>
+        <button type="button" class="toggle" id="toggleMode">Criar conta</button>
+      </div>
+      <div class="msg" id="msg"></div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ DASHBOARD ============ -->
+<div id="dashView">
+  <div class="dash-eyebrow">Painel</div>
+  <h1>Seus sistemas</h1>
+  <div class="grid">
+    <a class="mod" href="bots.html">
+      <span class="num">01</span>
+      <h3>Bots Discord</h3>
+      <p>Status e controle dos bots hospedados.</p>
+      <span class="arrow">↗</span>
+    </a>
+    <a class="mod" href="diario.html">
+      <span class="num">02</span>
+      <h3>Diário digital</h3>
+      <p>Crie páginas, escreva e organize seus registros.</p>
+      <span class="arrow">↗</span>
+    </a>
+    <a class="mod" href="editor.html">
+      <span class="num">03</span>
+      <h3>Editor de código</h3>
+      <p>Escreva e teste código direto no navegador.</p>
+      <span class="arrow">↗</span>
+    </a>
+    <a class="mod" href="agenda.html">
+      <span class="num">04</span>
+      <h3>Agenda</h3>
+      <p>Eventos, tarefas e compromissos.</p>
+      <span class="arrow">↗</span>
+    </a>
+    <a class="mod" href="mascote.html">
+      <span class="num">05</span>
+      <h3>Mascote do hub</h3>
+      <p>Seu assistente exclusivo do site.</p>
+      <span class="arrow">↗</span>
+    </a>
+  </div>
+</div>
+
+<div class="footer-note">
+  <span>Sistema privado</span>
+  <span id="clock"></span>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  // ====== CONFIGURE AQUI (mesmo valor em todas as páginas do hub) ======
+  const SUPABASE_URL = 'COLE_SUA_SUPABASE_URL_AQUI';
+  const SUPABASE_ANON_KEY = 'COLE_SUA_ANON_KEY_AQUI';
+  // =======================================================================
+
+  const configured = SUPABASE_URL.startsWith('http');
+  const supabase = configured ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+  const loginView = document.getElementById('loginView');
+  const dashView = document.getElementById('dashView');
+  const logoutBtn = document.getElementById('logoutBtn');
+
+  function showDash(){
+    loginView.style.display = 'none';
+    dashView.style.display = 'block';
+    logoutBtn.style.display = 'block';
+  }
+  function showLogin(){
+    loginView.style.display = 'flex';
+    dashView.style.display = 'none';
+    logoutBtn.style.display = 'none';
+  }
+
+  // Checa sessão ao carregar
+  (async () => {
+    if (!configured) return; // sem Supabase configurado, fica na tela de login com aviso
+    const { data } = await supabase.auth.getSession();
+    if (data.session) showDash(); else showLogin();
+  })();
+
+  if (configured) {
+    supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) showDash(); else showLogin();
+    });
+  }
+
+  logoutBtn.addEventListener('click', async () => {
+    if (configured) await supabase.auth.signOut();
+    showLogin();
+  });
+
+  let mode = 'login';
+  const form = document.getElementById('authForm');
+  const msg = document.getElementById('msg');
+  const submitBtn = document.getElementById('submitBtn');
+  const toggleBtn = document.getElementById('toggleMode');
+  const title = document.getElementById('title');
+  const subtitle = document.getElementById('subtitle');
+
+  function setMode(next){
+    mode = next;
+    if(mode === 'login'){
+      title.innerHTML = 'Entrar no <em>hub</em>';
+      subtitle.textContent = 'Este espaço é privado. Faça login para acessar seus sistemas, bots, diário e agenda.';
+      submitBtn.textContent = 'Entrar';
+      toggleBtn.textContent = 'Criar conta';
+    } else {
+      title.innerHTML = 'Criar <em>conta</em>';
+      subtitle.textContent = 'Primeiro acesso. Crie suas credenciais para abrir o hub.';
+      submitBtn.textContent = 'Criar conta';
+      toggleBtn.textContent = 'Já tenho conta';
+    }
+    msg.textContent = ''; msg.className = 'msg';
+  }
+  toggleBtn.addEventListener('click', () => setMode(mode === 'login' ? 'signup' : 'login'));
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+    if (!configured) {
+      msg.className = 'msg error';
+      msg.textContent = 'Supabase ainda não configurado. Cole a URL e a chave no topo do script deste arquivo.';
+      return;
+    }
+
+    submitBtn.disabled = true;
+    msg.className = 'msg'; msg.textContent = 'Processando...';
+
+    try {
+      if (mode === 'login') {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        msg.className = 'msg ok'; msg.textContent = 'Login feito.';
+      } else {
+        const { error } = await supabase.auth.signUp({ email, password });
+        if (error) throw error;
+        msg.className = 'msg ok';
+        msg.textContent = 'Conta criada. Confirme seu e-mail se exigido, depois faça login.';
+        setMode('login');
+      }
+    } catch (err) {
+      msg.className = 'msg error';
+      msg.textContent = err.message || 'Algo deu errado.';
+    } finally {
+      submitBtn.disabled = false;
+    }
+  });
+
+  function tick(){
+    const d = new Date();
+    document.getElementById('clock').textContent = d.toLocaleString('pt-BR', { hour:'2-digit', minute:'2-digit', day:'2-digit', month:'2-digit', year:'numeric' });
+  }
+  tick(); setInterval(tick, 1000*30);
+
+  // ===== Low-poly animated mesh background (compartilhado em todas as páginas) =====
+  const canvas = document.getElementById('mesh');
+  const ctx = canvas.getContext('2d');
+  let W, H, points = [];
+  const COUNT = 46;
+  function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+  function initPoints(){
+    points = [];
+    for(let i=0;i<COUNT;i++){
+      points.push({ x:Math.random()*W, y:Math.random()*H, vx:(Math.random()-0.5)*0.15, vy:(Math.random()-0.5)*0.15 });
+    }
+  }
+  function dist(a,b){ return Math.hypot(a.x-b.x, a.y-b.y); }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle = 'rgba(200,30,44,0.18)'; ctx.lineWidth = 1;
+    for(let i=0;i<points.length;i++){
+      for(let j=i+1;j<points.length;j++){
+        const d = dist(points[i], points[j]);
+        if(d < 160){
+          ctx.globalAlpha = 1 - d/160;
+          ctx.beginPath(); ctx.moveTo(points[i].x, points[i].y); ctx.lineTo(points[j].x, points[j].y); ctx.stroke();
+        }
+      }
+    }
+    ctx.globalAlpha = 1; ctx.fillStyle = 'rgba(200,30,44,0.5)';
+    for(const p of points){
+      ctx.beginPath(); ctx.arc(p.x, p.y, 1.6, 0, Math.PI*2); ctx.fill();
+      p.x += p.vx; p.y += p.vy;
+      if(p.x < 0 || p.x > W) p.vx *= -1;
+      if(p.y < 0 || p.y > H) p.vy *= -1;
+    }
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize', resize);
+  resize(); initPoints(); draw();
+</script>
+</body>
+</html>
