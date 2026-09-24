@@ -1,9 +1,12 @@
 {
   "name": "wakasa-local-agent",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
+  "engines": { "node": ">=18.18" },
   "scripts": {
     "start": "node local-agent/server.mjs",
+    "dev": "node --watch local-agent/server.mjs",
     "download:model": "node local-agent/download-model.mjs"
   },
   "dependencies": {

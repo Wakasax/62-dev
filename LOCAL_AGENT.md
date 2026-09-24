@@ -1,17 +1,39 @@
-# Faceta AI local
+# Faceta AI local — execução rápida
 
-Este projeto agora possui um agente local baseado em **TinyLlama 1.1B Chat** usando Transformers.js. O modelo é baixado para o diretório local da aplicação na primeira execução e não é enviado ao GitHub, porque os pesos ocupam centenas de MB.
+## Requisitos
 
-## Executar
+- Node.js 18.18 ou superior
+- aproximadamente 2 GB livres para dependências, cache e modelo
+- internet apenas na primeira execução, para baixar os pesos
+
+## Windows, macOS ou Linux
+
+Na raiz do projeto:
 
 ```bash
 npm install
+npm start
+```
+
+Abra no navegador:
+
+```text
+http://127.0.0.1:8787/mascote.html
+```
+
+O servidor baixa o modelo automaticamente quando a primeira mensagem é enviada. Para baixar antes de abrir a interface:
+
+```bash
 npm run download:model
 npm start
 ```
 
-Depois abra `http://localhost:8787/mascote.html`.
+## Importante
 
-O navegador conversa somente com `http://localhost:8787/api/chat`; não há chave de API nem serviço externo necessário depois que o modelo foi baixado. Para trocar o modelo, altere `MODEL_ID` em `local-agent/server.mjs` e execute o download novamente.
+- O modelo roda no processo Node.js local usando Transformers.js e WASM.
+- Não existe chave de API e as mensagens não são enviadas para um provedor de IA.
+- Os pesos ficam em `local-agent/.cache/`, ignorados pelo Git.
+- O GitHub Pages não executa Node.js; use o comando acima no seu computador ou em um servidor próprio.
+- Para verificar: `http://127.0.0.1:8787/api/health`.
 
-> O GitHub Pages continua sendo apenas a interface estática. Para IA realmente local, execute este servidor Node.js no seu computador.
+Se o download for interrompido, execute `npm run download:model` novamente. O cache parcial será reutilizado.
