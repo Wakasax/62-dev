@@ -3,90 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mascote — Wakasa Hub</title>
+<title>Faceta AI — Wakasa Hub</title>
 <style>
-  :root{ --bg:#0a0a0c; --panel:#111114; --line:#232327; --text:#f2f0ee; --muted:#8a8a90; --accent:#c81e2c; }
-  *{margin:0;padding:0;box-sizing:border-box;}
-  body{ background:var(--bg); color:var(--text); font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; min-height:100vh; }
-  header{ display:flex; align-items:center; justify-content:space-between; padding:28px 5vw; border-bottom:1px solid var(--line); }
-  header a{ color:var(--muted); text-decoration:none; font-size:13px; letter-spacing:0.08em; text-transform:uppercase; }
-  header a:hover{ color:var(--accent); }
-  .eyebrow{ font-size:12px; letter-spacing:0.18em; text-transform:uppercase; color:var(--accent); font-weight:600; display:flex; align-items:center; gap:8px; }
-  .eyebrow::before{ content:''; width:18px; height:1px; background:var(--accent); }
-  main{ max-width:560px; margin:0 auto; padding:60px 5vw; text-align:center; }
-  #mascot{ width:140px; height:140px; margin:0 auto 28px; }
-  h1{ font-size:30px; font-weight:800; margin-bottom:8px; }
-  .sub{ color:var(--muted); font-size:14px; margin-bottom:36px; }
-  .chat{ background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:20px; text-align:left; min-height:160px; max-height:300px; overflow-y:auto; margin-bottom:14px; }
-  .bubble{ font-size:14px; margin-bottom:10px; line-height:1.5; }
-  .bubble.bot{ color:var(--text); }
-  .bubble.user{ color:var(--accent); text-align:right; }
-  .row{ display:flex; gap:10px; }
-  .row input{ flex:1; background:var(--panel); border:1px solid var(--line); color:var(--text); padding:12px 14px; border-radius:6px; font-family:inherit; }
-  .row button{ background:var(--accent); color:#fff; border:none; padding:12px 20px; border-radius:6px; cursor:pointer; font-weight:700; font-family:inherit; }
+:root{--bg:#09090b;--panel:#111114;--panel2:#17171c;--line:#292930;--text:#f4f1ef;--muted:#92919a;--accent:#c81e2c;--accent2:#f04451;--good:#61d58a}
+*{box-sizing:border-box;margin:0}body{min-height:100vh;background:radial-gradient(circle at 75% 0,#351016 0,transparent 30%),var(--bg);color:var(--text);font:14px Inter,ui-sans-serif,system-ui,-apple-system,sans-serif}button,input{font:inherit}button{cursor:pointer}.shell{display:grid;grid-template-columns:260px 1fr;min-height:100vh}.sidebar{border-right:1px solid var(--line);padding:24px 16px;display:flex;flex-direction:column;gap:24px;background:#0d0d10}.brand{display:flex;align-items:center;gap:10px;padding:0 10px;color:var(--text);font-weight:800}.brand-mark{width:30px;height:30px;border:1px solid var(--accent);border-radius:9px;display:grid;place-items:center;color:var(--accent);font-weight:900}.new{width:100%;border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:12px;border-radius:9px;text-align:left}.new:hover,.nav a:hover{border-color:var(--accent);background:#211317}.section-label{color:#6d6c74;font-size:10px;letter-spacing:.15em;text-transform:uppercase;margin:2px 10px 8px}.nav{display:grid;gap:5px}.nav a{padding:10px;border:1px solid transparent;border-radius:8px;color:var(--muted);text-decoration:none}.nav a.active{color:var(--text);background:#211317;border-color:#54222a}.history{display:grid;gap:4px}.history button{border:0;background:transparent;color:var(--muted);text-align:left;padding:9px;border-radius:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.history button:hover{background:var(--panel2);color:var(--text)}.account{margin-top:auto;border-top:1px solid var(--line);padding:16px 10px;color:var(--muted);font-size:12px}.main{display:flex;flex-direction:column;min-width:0}.topbar{height:70px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 5%;color:var(--muted)}.model{display:flex;align-items:center;gap:8px;color:var(--text);font-weight:700}.dot{width:8px;height:8px;border-radius:99px;background:var(--good);box-shadow:0 0 10px var(--good)}.settings{border:1px solid var(--line);background:var(--panel);color:var(--muted);padding:8px 12px;border-radius:7px}.chat-wrap{width:min(860px,90%);margin:auto;display:flex;flex-direction:column;height:calc(100vh - 70px);padding:42px 0 24px}.welcome{text-align:center;margin:auto auto 34px}.avatar{margin:0 auto 18px;width:72px;height:72px;border-radius:22px;background:linear-gradient(145deg,#45131a,#17171c);border:1px solid var(--accent);display:grid;place-items:center;color:var(--accent2);font-size:28px;font-weight:900;box-shadow:0 0 40px #c81e2c2b}.welcome h1{font-size:32px;letter-spacing:-.04em;margin-bottom:8px}.welcome p{color:var(--muted)}.messages{overflow:auto;display:flex;flex-direction:column;gap:22px;padding:4px 8px}.message{display:flex;gap:12px;line-height:1.65;max-width:82%}.message.user{align-self:flex-end;flex-direction:row-reverse}.mini-avatar{width:28px;height:28px;flex:0 0 28px;border-radius:9px;background:#271116;color:var(--accent2);display:grid;place-items:center;font-size:11px;font-weight:800}.message.user .mini-avatar{background:var(--text);color:var(--bg)}.bubble{padding:12px 15px;border:1px solid var(--line);border-radius:13px;background:var(--panel)}.message.user .bubble{background:#291116;border-color:#58222a}.composer-area{margin-top:26px}.quick{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.quick button{border:1px solid var(--line);background:transparent;color:var(--muted);padding:7px 10px;border-radius:99px;font-size:12px}.quick button:hover{color:var(--text);border-color:var(--accent)}.composer{display:flex;align-items:flex-end;gap:10px;background:var(--panel);border:1px solid #3a3a42;border-radius:14px;padding:10px;box-shadow:0 10px 35px #0005}.composer textarea{border:0;outline:0;resize:none;min-height:24px;max-height:120px;flex:1;background:transparent;color:var(--text);padding:7px}.send{border:0;border-radius:9px;width:38px;height:38px;background:var(--accent);color:white;font-size:18px}.hint{display:flex;justify-content:space-between;color:#67666e;font-size:11px;margin-top:9px}.modal{position:fixed;inset:0;background:#0009;display:none;place-items:center;padding:20px}.modal.open{display:grid}.modal-card{width:min(480px,100%);background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px}.modal-card h2{margin-bottom:18px}.modal-card label{display:block;color:var(--muted);font-size:12px;margin:14px 0 6px}.modal-card input{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--text);padding:11px;border-radius:7px}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}.modal-actions button{padding:9px 14px;border-radius:7px;border:1px solid var(--line);background:transparent;color:var(--text)}.modal-actions .save{background:var(--accent);border-color:var(--accent)}
+@media(max-width:700px){.shell{display:block}.sidebar{display:none}.chat-wrap{height:calc(100vh - 70px);padding-top:28px}.message{max-width:94%}.welcome h1{font-size:27px}}
 </style>
 </head>
 <body>
-<header>
-  <div class="eyebrow">Mascote</div>
-  <a href="index.html">← Voltar ao hub</a>
-</header>
-
-<main>
-  <svg id="mascot" viewBox="0 0 140 140">
-    <polygon points="70,10 125,40 125,100 70,130 15,100 15,40" fill="#15151a" stroke="#c81e2c" stroke-width="2"/>
-    <polygon points="70,35 105,52 105,88 70,105 35,88 35,52" fill="#c81e2c" opacity="0.18"/>
-    <circle cx="55" cy="65" r="5" fill="#c81e2c"/>
-    <circle cx="85" cy="65" r="5" fill="#c81e2c"/>
-    <path d="M 55 85 Q 70 95 85 85" stroke="#c81e2c" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-  </svg>
-  <h1>Faceta</h1>
-  <p class="sub">Mascote low-poly exclusivo do hub.</p>
-
-  <div class="chat" id="chat">
-    <div class="bubble bot">Oi! Eu sou a Faceta. Pode me perguntar algo sobre o hub.</div>
-  </div>
-  <div class="row">
-    <input id="msgInput" placeholder="Fala comigo...">
-    <button id="sendBtn">Enviar</button>
-  </div>
-</main>
-
+<div class="shell"><aside class="sidebar"><div class="brand"><span class="brand-mark">✦</span> FACETA AI</div><button class="new" id="newChat">＋ Nova conversa</button><div><div class="section-label">Workspace</div><nav class="nav"><a class="active" href="mascote.html">⌁ Assistente</a><a href="bots.html">▣ Hospedagem</a><a href="index.html">⌂ Wakasa Hub</a></nav></div><div><div class="section-label">Conversas recentes</div><div class="history" id="history"></div></div><div class="account">Modelo local · Llama 3<br><span>Privacidade em primeiro lugar</span></div></aside><main class="main"><header class="topbar"><div class="model"><span class="dot"></span> Faceta <span style="color:var(--muted);font-weight:400">· Llama 3 (local)</span></div><button class="settings" id="openSettings">⚙ Configurar modelo</button></header><section class="chat-wrap"><div class="welcome" id="welcome"><div class="avatar">✦</div><h1>Como posso ajudar?</h1><p>Um agente open source para construir, organizar e evoluir seus projetos.</p></div><div class="messages" id="messages"></div><div class="composer-area"><div class="quick"><button>Revisar meu código</button><button>Planejar uma feature</button><button>Explicar este projeto</button></div><div class="composer"><textarea id="input" rows="1" placeholder="Converse com a Faceta..."></textarea><button class="send" id="send">↑</button></div><div class="hint"><span>Enter envia · Shift + Enter quebra linha</span><span>Faceta pode cometer erros</span></div></div></section></main></div>
+<div class="modal" id="modal"><div class="modal-card"><h2>Modelo open source</h2><p style="color:var(--muted);font-size:13px">Conecte uma instância local do Ollama. A interface funciona em modo demonstração enquanto o endpoint não estiver disponível.</p><label>Endpoint Ollama</label><input id="endpoint" placeholder="http://localhost:11434"><label>Modelo</label><input id="modelName" value="llama3.2"><div class="modal-actions"><button id="closeSettings">Cancelar</button><button class="save" id="saveSettings">Salvar</button></div></div></div>
 <script>
-  const chat = document.getElementById('chat');
-  const input = document.getElementById('msgInput');
-
-  const replies = [
-    { match: /diário|diario/i, text: 'O diário fica no menu principal — você pode criar quantas páginas quiser.' },
-    { match: /agenda/i, text: 'Na agenda você marca compromissos com data e marca como feito quando concluir.' },
-    { match: /bot/i, text: 'Os bots Discord precisam de um servidor próprio rodando 24h — o painel mostra o status deles.' },
-    { match: /editor|código|codigo/i, text: 'O editor roda JavaScript direto no navegador, com console de debug embutido.' },
-    { match: /oi|olá|ola/i, text: 'Oi! Em que posso ajudar por aqui?' }
-  ];
-
-  function addBubble(text, cls){
-    const div = document.createElement('div');
-    div.className = 'bubble ' + cls;
-    div.textContent = text;
-    chat.appendChild(div);
-    chat.scrollTop = chat.scrollHeight;
-  }
-
-  function respond(msg){
-    const found = replies.find(r => r.match.test(msg));
-    return found ? found.text : 'Ainda não sei responder isso, mas estou aprendendo!';
-  }
-
-  function send(){
-    const val = input.value.trim();
-    if (!val) return;
-    addBubble(val, 'user');
-    input.value = '';
-    setTimeout(() => addBubble(respond(val), 'bot'), 300);
-  }
-
-  document.getElementById('sendBtn').addEventListener('click', send);
-  input.addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
-</script>
-</body>
-</html>
+const $=s=>document.querySelector(s), messages=$('#messages'), input=$('#input'), endpoint=$('#endpoint'), modelName=$('#modelName');let config=JSON.parse(localStorage.getItem('faceta-config')||'{}');endpoint.value=config.endpoint||'';modelName.value=config.model||'llama3.2';
+function bubble(text,who){const el=document.createElement('div');el.className='message '+who;el.innerHTML='<span class="mini-avatar">'+(who==='user'?'Você':'✦')+'</span><div class="bubble"></div>';el.querySelector('.bubble').textContent=text;messages.appendChild(el);messages.scrollTop=messages.scrollHeight}
+function demoReply(text){if(/bot|hosped/i.test(text))return 'O painel de hospedagem agora reúne console, ciclo de vida, métricas, arquivos, banco, backups e configurações Node.js. Abra “Hospedagem” na lateral para explorar.';if(/código|codigo|revis/i.test(text))return 'Posso revisar o código, encontrar riscos e propor uma implementação. Cole um trecho ou diga qual arquivo quer evoluir.';return 'Entendi. Estou no modo local de demonstração. Configure o Ollama em ⚙ para conversar com seu modelo Llama sem depender de uma API paga.'}
+async function send(){const text=input.value.trim();if(!text)return;$('#welcome').style.display='none';bubble(text,'user');input.value='';input.style.height='auto';let answer;if(config.endpoint){try{const r=await fetch(config.endpoint.replace(/\/$/,'')+'/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:config.model||'llama3.2',prompt:text,stream:false})});if(!r.ok)throw Error();answer=(await r.json()).response}catch(e){answer='Não consegui alcançar o Ollama. Confira se ele está rodando e se o endpoint está correto. Enquanto isso: '+demoReply(text)}}else answer=demoReply(text);setTimeout(()=>bubble(answer,'bot'),180)}
+$('#send').onclick=send;input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}});input.addEventListener('input',()=>{input.style.height='auto';input.style.height=input.scrollHeight+'px'});document.querySelectorAll('.quick button').forEach(b=>b.onclick=()=>{input.value=b.textContent;input.focus()});$('#openSettings').onclick=()=>$('#modal').classList.add('open');$('#closeSettings').onclick=()=>$('#modal').classList.remove('open');$('#saveSettings').onclick=()=>{config={endpoint:endpoint.value.trim(),model:modelName.value.trim()||'llama3.2'};localStorage.setItem('faceta-config',JSON.stringify(config));$('#modal').classList.remove('open')};$('#newChat').onclick=()=>{messages.innerHTML='';$('#welcome').style.display='block';input.focus()};
+</script></body></html>
