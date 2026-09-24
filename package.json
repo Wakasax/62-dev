@@ -1,0 +1,13 @@
+{
+  "name": "wakasa-local-agent",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node local-agent/server.mjs",
+    "download:model": "node local-agent/download-model.mjs"
+  },
+  "dependencies": {
+    "@huggingface/transformers": "^3.7.2",
+    "express": "^4.21.2"
+  }
+}
