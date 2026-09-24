@@ -1,7 +1,9 @@
-# Lua AI no GitHub Pages
+# Lua AI
 
-A página `mascote.html` agora funciona como uma IA chamada `Lua AI`, executada no navegador com Transformers.js. Não precisa de instalação do Node.js nem de terminal local.
+O hub agora chama o assistente de **Lua AI** e usa a API compatível da Groq diretamente pela interface.
 
-Na primeira interação, o navegador baixa o modelo TinyLlama para o cache local do navegador. Depois disso o chat pode rodar sem depender de um backend próprio.
+Por segurança, nenhuma chave de API foi incluída no repositório. A chave informada na conversa ficou exposta e deve ser revogada/rotacionada no painel da Groq. No site, use **Configurar API** e cole uma nova chave; ela será armazenada apenas no `localStorage` do seu navegador.
 
-> Mensagem de erro alterada: `O agente local ainda não está disponível...` foi trocada para a identidade `Lua AI`, mantendo o fluxo de uso.
+A chamada usa `https://api.groq.com/openai/v1/chat/completions` e o modelo padrão `llama-3.1-8b-instant`.
+
+Para produção, não coloque uma chave Groq no HTML: GitHub Pages é público e qualquer visitante poderia extraí-la. Use um backend/proxy com segredo protegido.
