@@ -1,39 +1,9 @@
-# Faceta AI local — execução rápida
+# Faceta no GitHub Pages
 
-## Requisitos
+A página `mascote.html` agora executa o modelo no navegador usando Transformers.js. Não é necessário instalar Node.js, npm ou qualquer programa no computador.
 
-- Node.js 18.18 ou superior
-- aproximadamente 2 GB livres para dependências, cache e modelo
-- internet apenas na primeira execução, para baixar os pesos
+Basta abrir o site publicado pelo GitHub Pages. Na primeira conversa, o navegador baixa os pesos do TinyLlama e guarda-os no cache local. As mensagens são processadas no navegador; depois do primeiro download, o modelo pode funcionar sem conexão enquanto o cache estiver disponível.
 
-## Windows, macOS ou Linux
+O primeiro carregamento pode demorar e usa memória do dispositivo. Chrome ou Edge atualizado oferecem a melhor chance de usar WebGPU; a página faz fallback para WASM quando necessário.
 
-Na raiz do projeto:
-
-```bash
-npm install
-npm start
-```
-
-Abra no navegador:
-
-```text
-http://127.0.0.1:8787/mascote.html
-```
-
-O servidor baixa o modelo automaticamente quando a primeira mensagem é enviada. Para baixar antes de abrir a interface:
-
-```bash
-npm run download:model
-npm start
-```
-
-## Importante
-
-- O modelo roda no processo Node.js local usando Transformers.js e WASM.
-- Não existe chave de API e as mensagens não são enviadas para um provedor de IA.
-- Os pesos ficam em `local-agent/.cache/`, ignorados pelo Git.
-- O GitHub Pages não executa Node.js; use o comando acima no seu computador ou em um servidor próprio.
-- Para verificar: `http://127.0.0.1:8787/api/health`.
-
-Se o download for interrompido, execute `npm run download:model` novamente. O cache parcial será reutilizado.
+Observação: os pesos do modelo não ficam versionados dentro do Git porque são grandes. Eles são baixados pelo navegador a partir do repositório público do modelo apenas na primeira execução.
