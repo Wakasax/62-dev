@@ -1,23 +1,1032 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Lua AI — Wakasa Hub</title>
-<style>
-:root{--bg:#09090b;--panel:#111114;--line:#292930;--text:#f4f1ef;--muted:#92919a;--accent:#c81e2c;--good:#61d58a}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 75% 0,#351016,transparent 34%),var(--bg);color:var(--text);font:14px system-ui,sans-serif}.shell{display:grid;grid-template-columns:240px 1fr;min-height:100vh}.side{border-right:1px solid var(--line);padding:24px 16px}.brand{font-weight:800;letter-spacing:.08em;margin:0 10px 26px}.brand b{color:var(--accent);font-size:22px;margin-right:8px}.nav a,.new,.settings{display:block;width:100%;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--text);padding:11px;text-decoration:none;text-align:left;margin-bottom:7px}.nav a:hover,.nav .active,.new:hover,.settings:hover{border-color:var(--accent);background:#251116}.label{color:#6d6c74;font-size:10px;letter-spacing:.15em;text-transform:uppercase;margin:26px 10px 10px}.privacy{position:fixed;bottom:22px;color:var(--muted);font-size:11px;padding:0 10px}.main{display:flex;flex-direction:column}.top{height:70px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 5%;color:var(--muted)}.status{color:var(--good)}.chat{width:min(820px,90%);height:calc(100vh - 70px);margin:auto;display:flex;flex-direction:column;padding:40px 0 24px}.welcome{text-align:center;margin:auto auto 32px}.avatar{width:72px;height:72px;border:1px solid var(--accent);border-radius:22px;display:grid;place-items:center;margin:auto auto 16px;color:#f04451;font-size:28px;background:#2a1015}.welcome h1{font-size:32px;margin:0 0 8px}.welcome p{color:var(--muted)}.messages{overflow:auto;display:flex;flex-direction:column;gap:18px;padding:5px}.msg{display:flex;gap:11px;line-height:1.6;max-width:85%}.msg.user{align-self:flex-end;flex-direction:row-reverse}.bubble{padding:12px 15px;border:1px solid var(--line);border-radius:13px;background:var(--panel);white-space:pre-wrap}.user .bubble{background:#291116;border-color:#58222a}.mini{width:28px;height:28px;flex:0 0 28px;border-radius:8px;display:grid;place-items:center;background:#2a1015;color:#f04451;font-size:11px}.user .mini{background:var(--text);color:var(--bg)}.compose{margin-top:24px;display:flex;gap:9px;background:var(--panel);border:1px solid #3a3a42;border-radius:13px;padding:9px}.compose textarea{flex:1;resize:none;outline:0;border:0;background:transparent;color:var(--text);padding:8px}.send{width:40px;height:40px;border:0;border-radius:9px;background:var(--accent);color:white;font-size:18px}.send:disabled{opacity:.5}.hint{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;margin-top:8px}.modal{position:fixed;inset:0;background:#000b;display:none;place-items:center;padding:20px}.modal.open{display:grid}.card{width:min(480px,100%);background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px}.card h2{margin:0 0 8px}.card p{color:var(--muted);font-size:12px;line-height:1.5}.card label{display:block;color:var(--muted);font-size:12px;margin:14px 0 6px}.card input{width:100%;padding:11px;background:var(--bg);border:1px solid var(--line);border-radius:7px;color:var(--text)}.actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}.actions button{padding:9px 13px;border:1px solid var(--line);border-radius:7px;background:transparent;color:var(--text)}.actions .save{background:var(--accent);border-color:var(--accent)}@media(max-width:700px){.shell{display:block}.side{display:none}.chat{height:calc(100vh - 70px)}.welcome h1{font-size:26px}}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Lua AI — Wakasa Hub</title>
+  <style>
+    :root {
+      --bg: #081018;
+      --bg2: #101827;
+      --panel: rgba(16, 24, 39, 0.9);
+      --panel-strong: #121f2d;
+      --line: rgba(148, 163, 184, 0.18);
+      --soft: rgba(148, 163, 184, 0.08);
+      --text: #edf4ff;
+      --muted: #9aa9ba;
+      --accent: #7c9cff;
+      --accent-2: #87f0d4;
+      --accent-3: #e98be9;
+      --danger: #ff7272;
+      --success: #63dda8;
+      --shadow: 0 20px 40px rgba(4, 10, 18, 0.4);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      font-family: Inter, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(124, 156, 255, 0.18), transparent 25%),
+        radial-gradient(circle at bottom right, rgba(135, 240, 212, 0.14), transparent 30%),
+        linear-gradient(135deg, var(--bg) 0%, var(--bg2) 100%);
+      color: var(--text);
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button, input, textarea { font: inherit; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 28px;
+    }
+
+    .shell {
+      width: min(1440px, 100%);
+      min-height: calc(100vh - 56px);
+      display: grid;
+      grid-template-columns: 300px minmax(0, 1fr) 330px;
+      background: rgba(8, 16, 24, 0.55);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      overflow: hidden;
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow);
+    }
+
+    .sidebar {
+      background: rgba(14, 22, 33, 0.9);
+      border-right: 1px solid var(--line);
+      padding: 24px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text);
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-3));
+      box-shadow: 0 10px 25px rgba(124, 156, 255, 0.45);
+      font-size: 1.2rem;
+    }
+
+    .primary-btn, .secondary-btn, .chip-btn, .send-btn {
+      border: 1px solid transparent;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: 180ms ease;
+    }
+
+    .primary-btn {
+      padding: 12px 14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-3));
+      color: white;
+      font-weight: 700;
+      box-shadow: 0 15px 25px rgba(124, 156, 255, 0.28);
+    }
+
+    .primary-btn:hover, .secondary-btn:hover, .chip-btn:hover, .send-btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.04);
+    }
+
+    .section-label{
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      color: var(--muted);
+      text-transform: uppercase;
+      padding: 0 10px;
+      margin-bottom: 8px;
+    }
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .nav a {
+      padding: 11px 12px;
+      border-radius: 12px;
+      color: var(--muted);
+      border: 1px solid transparent;
+      transition: 180ms ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav a:hover {
+      color: var(--text);
+      background: var(--soft);
+      border-color: var(--line);
+    }
+
+    .nav a.active {
+      color: var(--text);
+      background: linear-gradient(90deg, rgba(124, 156, 255, 0.18), transparent);
+      border-color: rgba(124, 156, 255, 0.18);
+    }
+
+    .memory-list {
+      list-style: none;
+      margin: 0;
+      padding: 0 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .memory-list li {
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(124, 156, 255, 0.05);
+      color: var(--muted);
+      border: 1px solid var(--line);
+      font-size: 0.9rem;
+    }
+
+    .status-mini {
+      margin-top: auto;
+      padding: 14px 12px;
+      border-radius: 14px;
+      background: rgba(99, 221, 168, 0.07);
+      border: 1px solid rgba(99, 221, 168, 0.3);
+      color: var(--success);
+      font-size: 0.86rem;
+      line-height: 1.5;
+    }
+
+    .main {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      border-right: 1px solid var(--line);
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(12, 18, 27, 0.42);
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(99, 221, 168, 0.085);
+      border: 1px solid rgba(99, 221, 168, 0.25);
+      color: var(--success);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 14px rgba(99, 221, 168, 0.9);
+    }
+
+    .secondary-btn {
+      padding: 10px 14px;
+      background: rgba(148, 163, 184, 0.04);
+      border-color: var(--line);
+      color: var(--text);
+    }
+
+    .chat-wrap {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .welcome {
+      padding: 26px 24px 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .welcome-box {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      background: linear-gradient(135deg, rgba(124, 156, 255, 0.12), rgba(147, 128, 255, 0.06));
+      border: 1px solid rgba(124, 156, 255, 0.18);
+      border-radius: 22px;
+      padding: 18px 20px;
+    }
+
+    .avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      font-size: 1.7rem;
+      background: linear-gradient(135deg, var(--accent), var(--accent-3));
+      box-shadow: 0 15px 28px rgba(124, 156, 255, 0.25);
+    }
+
+    .welcome h1 {
+      margin: 0;
+      font-size: clamp(1.8rem, 2.6vw, 2.5rem);
+      letter-spacing: -0.05em;
+    }
+
+    .welcome p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .chip-btn {
+      background: rgba(148, 163, 184, 0.04);
+      border-color: var(--line);
+      color: var(--text);
+      padding: 9px 12px;
+      font-size: 0.82rem;
+    }
+
+    .messages {
+      flex: 1;
+      overflow: auto;
+      padding: 22px 24px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      background: linear-gradient(180deg, rgba(6, 13, 19, 0.26), rgba(10, 17, 25, 0.08));
+    }
+
+    .msg {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      max-width: 90%;
+    }
+
+    .msg.user {
+      align-self: flex-end;
+      flex-direction: row-reverse;
+    }
+
+    .msg .mini {
+      font-size: 0.7rem;
+      background: rgba(148, 163, 184, 0.06);
+      border-color: var(--line);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 8px 8px;
+      color: var(--muted);
+      min-width: 52px;
+      text-align: center;
+    }
+
+    .bubble {
+      background: rgba(148, 163, 184, 0.07);
+      border: 1px solid var(--line);
+      border-radius: 18px 18px 18px 4px;
+      padding: 12px 14px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      color: var(--text);
+    }
+
+    .msg.user .bubble {
+      background: linear-gradient(135deg, rgba(124, 156, 255, 0.18), rgba(135, 240, 212, 0.08));
+      border-radius: 18px 18px 4px 18px;
+      border-color: rgba(124, 156, 255, 0.2);
+    }
+
+    .composer {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 100px;
+      gap: 12px;
+      padding: 16px 24px 20px;
+      border-top: 1px solid var(--line);
+      background: rgba(10, 16, 24, 0.72);
+    }
+
+    textarea {
+      resize: none;
+      min-height: 52px;
+      max-height: 160px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(14, 22, 33, 0.9);
+      color: var(--text);
+      padding: 14px 16px;
+      outline: none;
+      line-height: 1.5;
+    }
+
+    textarea:focus {
+      border-color: rgba(124, 156, 255, 0.55);
+      box-shadow: 0 0 0 4px rgba(124, 156, 255, 0.08);
+    }
+
+    .send-btn {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #07131b;
+      font-weight: 800;
+      font-size: 1rem;
+      border-color: transparent;
+    }
+
+    .send-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .hint {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 0 24px 18px;
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .side-panel {
+      background: rgba(10, 18, 27, 0.66);
+      padding: 20px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .panel-card {
+      background: rgba(148, 163, 184, 0.04);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    .panel-card h3 {
+      margin: 0 0 12px;
+      font-size: 1rem;
+    }
+
+    .context-box {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .tag {
+      padding: 7px 9px;
+      border-radius: 999px;
+      background: rgba(124, 156, 255, 0.08);
+      color: var(--text);
+      border: 1px solid rgba(124, 156, 255, 0.19);
+      font-size: 0.7rem;
+    }
+
+    .fact-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    .fact-list li {
+      background: rgba(135, 240, 212, 0.04);
+      border: 1px solid rgba(135, 240, 212, 0.16);
+      border-radius: 12px;
+      padding: 8px 10px;
+      line-height: 1.5;
+    }
+
+    .shortcut-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .shortcut {
+      display: block;
+      padding: 11px 12px;
+      border-radius: 12px;
+      background: rgba(148, 163, 184, 0.04);
+      border: 1px solid var(--line);
+      color: var(--text);
+      transition: 180ms ease;
+    }
+
+    .shortcut:hover {
+      transform: translateY(-1px);
+      border-color: rgba(124, 156, 255, 0.3);
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(3, 7, 10, 0.72);
+      backdrop-filter: blur(8px);
+      z-index: 20;
+    }
+
+    .modal.open { display: flex; }
+
+    .modal-card {
+      width: min(480px, calc(100% - 32px));
+      background: rgba(12, 18, 26, 0.98);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      padding: 22px 20px;
+    }
+
+    .modal-card h2 {
+      margin: 0 0 8px;
+      font-size: 1.5rem;
+    }
+
+    .modal-card p {
+      color: var(--muted);
+      line-height: 1.6;
+      margin: 0 0 18px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .field label {
+      color: var(--muted);
+      font-size: 0.76rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 13px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(148, 163, 184, 0.03);
+      color: var(--text);
+      outline: none;
+    }
+
+    .field input:focus {
+      border-color: rgba(124, 156, 255, 0.5);
+      box-shadow: 0 0 0 4px rgba(124, 156, 255, 0.07);
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .ghost-btn {
+      background: transparent;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      color: var(--text);
+      padding: 10px 14px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 1100px) {
+      .shell {
+        grid-template-columns: 240px minmax(0, 1fr);
+      }
+
+      .side-panel {
+        display: none;
+      }
+    }
+
+    @media (max-width: 760px) {
+      body { padding: 12px; }
+
+      .shell {
+        grid-template-columns: 1fr;
+        min-height: calc(100vh - 24px);
+      }
+
+      .sidebar {
+        border-right: none;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .topbar {
+        padding: 16px 18px;
+      }
+
+      .messages, .welcome, .composer, .hint {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .composer {
+        grid-template-columns: 1fr;
+      }
+
+      .msg {
+        max-width: 100%;
+      }
+    }
+  </style>
 </head>
 <body>
-<div class="shell"><aside class="side"><div class="brand"><b>✦</b>LUA AI</div><button class="new" id="new">＋ Nova conversa</button><div class="label">Workspace</div><nav class="nav"><a class="active" href="mascote.html">⌁ Lua AI</a><a href="bots.html">▣ Hospedagem</a><a href="index.html">⌂ Wakasa Hub</a></nav><div class="privacy">Groq · openai/gpt-oss-20b<br>Memória salva neste navegador</div></aside><main class="main"><header class="top"><span class="status" id="status">Lua AI pronta · memória ativa</span><button class="settings" id="settings">⚙ Configurar API</button></header><section class="chat"><div class="welcome" id="welcome"><div class="avatar">✦</div><h1>Lua AI</h1><p>Assistente do Wakasa Hub com memória da conversa.</p></div><div class="messages" id="messages"></div><div class="compose"><textarea id="input" rows="1" placeholder="Converse com a Lua..."></textarea><button class="send" id="send">↑</button></div><div class="hint"><span>Enter envia · Shift + Enter quebra linha</span><span id="memoryHint">0 mensagens na memória</span></div></section></main></div>
-<div class="modal" id="modal"><div class="card"><h2>Configurar Groq</h2><p>A chave fica somente neste navegador e não é enviada ao GitHub. Como esta é uma página pública, não coloque a chave no código.</p><label>Groq API key</label><input id="key" type="password" autocomplete="off" placeholder="gsk_..."><div class="actions"><button id="cancel">Cancelar</button><button class="save" id="save">Salvar</button></div></div></div>
-<script>
-const $=s=>document.querySelector(s),messagesEl=$('#messages'),input=$('#input'),sendButton=$('#send'),memoryHint=$('#memoryHint');
-const MODEL='openai/gpt-oss-20b', MEMORY_KEY='lua-chat-memory-v1', CONFIG_KEY='lua-groq';
-let cfg=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');let history=JSON.parse(localStorage.getItem(MEMORY_KEY)||'[]');$('#key').value=cfg.key||'';
-function add(text,who){const e=document.createElement('div');e.className='msg '+who;e.innerHTML='<span class="mini">'+(who==='user'?'Você':'✦')+'</span><div class="bubble"></div>';e.querySelector('.bubble').textContent=text;messagesEl.append(e);messagesEl.scrollTop=messagesEl.scrollHeight}
-function updateMemory(){memoryHint.textContent=history.length+' mensagens na memória'}
-function renderHistory(){messagesEl.innerHTML='';if(!history.length){$('#welcome').style.display='block'}else{$('#welcome').style.display='none';history.forEach(item=>add(item.content,item.role==='user'?'user':'bot'))}updateMemory()}
-function saveHistory(){localStorage.setItem(MEMORY_KEY,JSON.stringify(history));updateMemory()}
-async function send(){const text=input.value.trim();if(!text||sendButton.disabled)return;if(!cfg.key){$('#modal').classList.add('open');return}$('#welcome').style.display='none';history.push({role:'user',content:text});add(text,'user');saveHistory();input.value='';sendButton.disabled=true;$('#status').textContent='Lua está pensando…';try{const context=history.slice(-20);const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+cfg.key},body:JSON.stringify({model:MODEL,messages:[{role:'system',content:'Você é a Lua AI, assistente útil do Wakasa Hub. Responda em português brasileiro. Use o histórico da conversa para manter contexto e não peça novamente informações que já foram fornecidas.'},...context],temperature:.7,max_tokens:700})});const d=await r.json();if(!r.ok)throw Error(d.error?.message||'Erro da Groq');const answer=d.choices?.[0]?.message?.content||'A Groq não retornou uma resposta.';history.push({role:'assistant',content:answer});saveHistory();add(answer,'bot');$('#status').textContent='Lua AI pronta · memória ativa'}catch(e){history.pop();saveHistory();add('Não foi possível falar com a Groq: '+e.message,'bot');$('#status').textContent='Verifique a API Groq'}finally{sendButton.disabled=false}}
-$('#send').onclick=send;input.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}};$('#new').onclick=()=>{history=[];saveHistory();messagesEl.innerHTML='';$('#welcome').style.display='block';input.focus()};$('#settings').onclick=()=>$('#modal').classList.add('open');$('#cancel').onclick=()=>$('#modal').classList.remove('open');$('#save').onclick=()=>{cfg={key:$('#key').value.trim()};localStorage.setItem(CONFIG_KEY,JSON.stringify(cfg));$('#modal').classList.remove('open');$('#status').textContent='Lua AI pronta · memória ativa'};renderHistory();
-</script></body></html>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">✦</div>
+        <span>Lua AI</span>
+      </div>
+
+      <button class="primary-btn" id="newChat">+ Nova conversa</button>
+
+      <div>
+        <div class="section-label">Workspace</div>
+        <nav class="nav">
+          <a href="mascote.html" class="active">⌁ Lua AI</a>
+          <a href="index.html">⌂ Wakasa Hub</a>
+          <a href="diario.html">✎ Diário</a>
+          <a href="editor.html">⌨ Editor</a>
+          <a href="cursos.html">▣ Cursos</a>
+        </nav>
+      </div>
+
+      <div>
+        <div class="section-label">Memória</div>
+        <ul class="memory-list" id="memoryList">
+          <li>Contexto de estudo ativo</li>
+          <li>Preferências do usuário</li>
+          <li>Notas pessoais</li>
+        </ul>
+      </div>
+
+      <div class="status-mini">
+        Groq • openai/gpt-oss-20b<br>
+        Memória salva neste navegador.
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="status-pill"><span class="dot"></span><span id="statusText">Lua AI pronta · contexto ativo</span></div>
+        <button class="secondary-btn" id="settingsBtn">⚙ Configurar API</button>
+      </header>
+
+      <div class="chat-wrap">
+        <section class="welcome">
+          <div class="welcome-box">
+            <div class="avatar">✦</div>
+            <div>
+              <h1>Lua AI</h1>
+              <p>Seu assistente pessoal para estudo, produtividade e organização do Wakasa Hub.</p>
+            </div>
+          </div>
+          <div class="chips">
+            <button class="chip-btn" data-prompt="Resuma meu dia e me diga o que é prioridade agora.">Resumo do dia</button>
+            <button class="chip-btn" data-prompt="Quero ajuda para organizar meus estudos e projetos.">Organizar estudos</button>
+            <button class="chip-btn" data-prompt="Relembra o que eu falei sobre meus objetivos e interesses.">Relembrar contexto</button>
+          </div>
+        </section>
+
+        <section class="messages" id="messages"></section>
+
+        <div class="composer">
+          <textarea id="input" rows="1" placeholder="Peça ajuda, organize ideias, revise estudos, ou fale sobre seu dia..."></textarea>
+          <button class="send-btn" id="sendBtn">Enviar</button>
+        </div>
+
+        <div class="hint">
+          <span>Enter envia · Shift + Enter quebra linha</span>
+          <span id="memoryCounter">0 registros na memória</span>
+        </div>
+      </div>
+    </main>
+
+    <aside class="side-panel">
+      <div class="panel-card">
+        <h3>Contexto do agente</h3>
+        <div class="context-box" id="contextSummary">
+          Carregando informações do ambiente...
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <h3>Memória pessoal</h3>
+        <ul class="fact-list" id="factsList">
+          <li>Sem fatos salvos ainda.</li>
+        </ul>
+      </div>
+
+      <div class="panel-card">
+        <h3>Atalhos</h3>
+        <div class="shortcut-grid">
+          <a class="shortcut" href="index.html">↗ Ir para o hub</a>
+          <a class="shortcut" href="diario.html">✎ Abrir diário</a>
+          <a class="shortcut" href="editor.html">⌨ Abrir editor</a>
+          <a class="shortcut" href="cursos.html">▣ Ver cursos</a>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <div class="modal" id="modal" aria-hidden="true">
+    <div class="modal-card">
+      <h2>Configurar Groq</h2>
+      <p>A chave fica somente neste navegador e não é enviada ao GitHub. Não coloque sua chave em código público.</p>
+      <div class="field">
+        <label for="keyInput">Groq API key</label>
+        <input id="keyInput" type="password" autocomplete="off" placeholder="gsk_...">
+      </div>
+      <div class="modal-actions">
+        <button class="ghost-btn" id="cancelBtn">Cancelar</button>
+        <button class="primary-btn" id="saveKeyBtn">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const CONFIG_KEY = 'lua-groq';
+    const MEMORY_KEY = 'lua-agent-memory-v1';
+    const PROFILE_KEY = 'lua-agent-profile-v1';
+    const MODEL = 'openai/gpt-oss-20b';
+
+    const messagesEl = document.getElementById('messages');
+    const inputEl = document.getElementById('input');
+    const sendBtn = document.getElementById('sendBtn');
+    const statusText = document.getElementById('statusText');
+    const memoryCounter = document.getElementById('memoryCounter');
+    const contextSummary = document.getElementById('contextSummary');
+    const factsList = document.getElementById('factsList');
+    const modal = document.getElementById('modal');
+    const keyInput = document.getElementById('keyInput');
+
+    let cfg = JSON.parse(localStorage.getItem(CONFIG_KEY) || '{}');
+    let history = JSON.parse(localStorage.getItem(MEMORY_KEY) || '[]');
+    let profile = JSON.parse(localStorage.getItem(PROFILE_KEY) || '{"facts":[]}');
+
+    const pageInfo = () => {
+      const diary = JSON.parse(localStorage.getItem('wakasa_diary_pages') || '[]');
+      const recentPages = diary.slice(-4).map((page) => ({
+        title: page.title || 'Sem título',
+        preview: (page.body || '').replace(/\s+/g, ' ').slice(0, 110)
+      }));
+
+      return {
+        pageTitle: document.title,
+        url: window.location.href,
+        diaryCount: diary.length,
+        recentPages,
+        chatHistory: history.length,
+        profileFacts: profile.facts || []
+      };
+    };
+
+    function saveHistory() {
+      localStorage.setItem(MEMORY_KEY, JSON.stringify(history));
+      memoryCounter.textContent = `${history.length} registros na memória`;
+    }
+
+    function saveProfile() {
+      localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+      renderFacts();
+    }
+
+    function renderFacts() {
+      const facts = profile.facts || [];
+      factsList.innerHTML = '';
+
+      if (!facts.length) {
+        factsList.innerHTML = '<li>Sem fatos salvos ainda.</li>';
+        return;
+      }
+
+      facts.slice(0, 6).forEach((fact) => {
+        const item = document.createElement('li');
+        item.textContent = fact;
+        factsList.appendChild(item);
+      });
+    }
+
+    function updateContextSummary() {
+      const info = pageInfo();
+      const tags = [
+        info.pageTitle,
+        info.diaryCount ? `${info.diaryCount} páginas no diário` : 'Sem diário ainda',
+        `${info.chatHistory} mensagens na conversa`,
+        info.profileFacts.length ? `${info.profileFacts.length} fatos salvos` : 'Sem perfil ainda'
+      ];
+
+      contextSummary.innerHTML = `
+        <div><strong>Página:</strong> ${info.pageTitle}</div>
+        <div><strong>Diário:</strong> ${info.diaryCount} registros</div>
+        <div><strong>Memória:</strong> ${info.chatHistory} interações</div>
+        <div class="tag-list">
+          ${tags.map((tag) => `<span class="tag">${tag}</span>`).join('')}
+        </div>
+      `;
+    }
+
+    function addMessage(text, who = 'bot') {
+      const wrap = document.createElement('div');
+      wrap.className = `msg ${who}`;
+      const label = document.createElement('span');
+      label.className = 'mini';
+      label.textContent = who === 'user' ? 'Você' : 'Lua';
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.textContent = text;
+      wrap.appendChild(label);
+      wrap.appendChild(bubble);
+      messagesEl.appendChild(wrap);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function renderHistory() {
+      messagesEl.innerHTML = '';
+
+      if (!history.length) {
+        addMessage('Olá! Sou a Lua AI. Posso ajudar com estudo, organização, revisão de ideias e acompanhar o que você faz no Wakasa Hub.');
+      } else {
+        history.forEach((item) => addMessage(item.content, item.role === 'user' ? 'user' : 'bot'));
+      }
+
+      memoryCounter.textContent = `${history.length} registros na memória`;
+    }
+
+    function rememberFromConversation(text) {
+      const lower = text.toLowerCase();
+      const facts = profile.facts || [];
+      const newFacts = new Set(facts);
+
+      const patterns = [
+        /meu nome(?: é| é o| é a)? ([a-zà-úç]+)/i,
+        /gosto de ([a-zà-úç\s]+)/i,
+        /quero aprender ([a-zà-úç\s]+)/i,
+        /minha meta(?: é| é:| é ) ([a-zà-úç\s]+)/i,
+        /meu objetivo(?: é| é:| é ) ([a-zà-úç\s]+)/i,
+        /preciso de ajuda com ([a-zà-úç\s]+)/i,
+      ];
+
+      for (const regex of patterns) {
+        const match = text.match(regex);
+        if (match && match[1]) {
+          const fact = match[1].trim();
+          if (fact.length > 2) newFacts.add(fact.charAt(0).toUpperCase() + fact.slice(1));
+        }
+      }
+
+      const maybeUserName = lower.includes('me chame') || lower.includes('meu nome');
+      if (maybeUserName && !facts.some((f) => /nome/i.test(f))) {
+        const name = text.match(/(?:me chame de|meu nome(?: é| é o| é a)? )([a-zà-úç]+)/i)?.[1];
+        if (name) newFacts.add(`Nome: ${name}`);
+      }
+
+      profile.facts = [...newFacts].slice(0, 8);
+      saveProfile();
+    }
+
+    function buildPrompt(userText) {
+      const info = pageInfo();
+      const diaryPreview = info.recentPages.length
+        ? info.recentPages.slice(-3).map((page) => `- ${page.title}: ${page.preview}`).join('\n')
+        : 'Nenhuma página recente no diário';
+
+      const profileText = info.profileFacts.length
+        ? info.profileFacts.map((fact) => `- ${fact}`).join('\n')
+        : 'Nenhum detalhe pessoal salvo ainda';
+
+      return `Você é a Lua AI, assistente pessoal do usuário dentro do Wakasa Hub. Responda em português brasileiro, com tom natural, útil e proativo.
+
+Objetivo: ajudar como agente real, lembrando das preferências, metas e conversas anteriores do usuário. Você pode consultar o contexto do site e o diário local, mas não invente fatos além do que foi informado.
+
+Contexto do usuário:
+- Página atual: ${info.pageTitle}
+- Diário: ${info.diaryCount} páginas registradas
+- Últimas páginas do diário:
+${diaryPreview}
+- Fatos pessoais salvos:
+${profileText}
+
+Instruções:
+1. Seja útil, acolhedor e objetivo.
+2. Sempre lembrando que o usuário está no sistema Wakasa Hub.
+3. Sugira ações práticas, como revisar diário, estudar, organizar tarefas, editar código ou priorizar o próximo passo.
+4. Se a conversa indicar uma preferência ou objetivo, guarde isso na memória do agente.
+5. Não diga que você "não tem acesso" ao site; use o que existe localmente como contexto.
+
+Pergunta do usuário:
+${userText}`;
+    }
+
+    async function callGroq(prompt) {
+      const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${cfg.key}`
+        },
+        body: JSON.stringify({
+          model: MODEL,
+          messages: [
+            { role: 'system', content: 'Você é a Lua AI, assistente pessoal do usuário do Wakasa Hub. Responda em português brasileiro, seja útil e contextual.' },
+            ...history.slice(-8).map((msg) => ({ role: msg.role, content: msg.content })),
+            { role: 'user', content: prompt }
+          ],
+          temperature: 0.8,
+          max_tokens: 500
+        })
+      });
+
+      if (!resp.ok) {
+        const text = await resp.text();
+        throw new Error(text || 'Erro ao chamar Groq');
+      }
+
+      const data = await resp.json();
+      return data.choices?.[0]?.message?.content?.trim() || 'Não consegui gerar resposta agora.';
+    }
+
+    function fallbackResponse(userText) {
+      const lower = userText.toLowerCase();
+      const info = pageInfo();
+
+      if (lower.includes('resumo') || lower.includes('sumarize')) {
+        return `Resumo rápido: você está usando o Wakasa Hub com foco em organização, estudo e produtividade. Há ${info.diaryCount} páginas no diário e ${history.length} registros na memória. O próximo passo prático seria definir 1 meta principal para hoje e revisar os itens mais relevantes do seu diário.`;
+      }
+
+      if (lower.includes('diário') || lower.includes('diario')) {
+        if (!info.diaryCount) {
+          return 'Você ainda não cadastrou páginas no diário. Posso te ajudar a criar um fluxo de organização: um tópico por dia, uma meta principal e 3 a 5 ideias de estudo.';
+        }
+        return `No seu diário há ${info.diaryCount} páginas registradas. Posso te ajudar a resumir o que você já escreveu, separar temas recorrentes e sugerir uma próxima etapa com base nelas.`;
+      }
+
+      if (lower.includes('estud') || lower.includes('aprend')) {
+        return 'Vamos transformar isso em um plano simples: 1) definir objetivo específico, 2) dividir em metas de 25–45 minutos, 3) revisar ao final do dia e 4) registrar o que aprendeu no diário. Posso te ajudar a montar isso.';
+      }
+
+      if (info.profileFacts.length) {
+        return `Entendi. Como seu agente pessoal, eu lembro que você tem foco em ${info.profileFacts.slice(0, 2).join(' e ')}. Posso seguir com isso e te sugerir uma rotina mais útil para sua realidade.`;
+      }
+
+      return 'Entendi. Como seu assistente pessoal, posso te ajudar a organizar ideias, revisar estudo, resumir seu diário e manter tudo integrado ao Wakasa Hub. Se quiser, posso transformar essa conversa em um plano prático para hoje.';
+    }
+
+    async function sendMessage() {
+      const text = inputEl.value.trim();
+      if (!text) return;
+
+      sendBtn.disabled = true;
+      addMessage(text, 'user');
+      history.push({ role: 'user', content: text });
+      inputEl.value = '';
+      inputEl.style.height = 'auto';
+
+      statusText.textContent = 'Lua AI pensando...';
+
+      try {
+        const prompt = buildPrompt(text);
+        rememberFromConversation(text);
+
+        let response;
+        if (cfg.key) {
+          try {
+            response = await callGroq(prompt);
+          } catch (error) {
+            response = fallbackResponse(text);
+          }
+        } else {
+          response = fallbackResponse(text);
+        }
+
+        addMessage(response, 'bot');
+        history.push({ role: 'assistant', content: response });
+        saveHistory();
+        updateContextSummary();
+      } catch (error) {
+        const fallback = fallbackResponse(text);
+        addMessage(fallback, 'bot');
+        history.push({ role: 'assistant', content: fallback });
+        saveHistory();
+      } finally {
+        statusText.textContent = 'Lua AI pronta · contexto ativo';
+        sendBtn.disabled = false;
+      }
+    }
+
+    function openSettings() {
+      keyInput.value = cfg.key || '';
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeSettings() {
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+
+    document.getElementById('sendBtn').addEventListener('click', sendMessage);
+    document.getElementById('newChat').addEventListener('click', () => {
+      history = [];
+      saveHistory();
+      renderHistory();
+      statusText.textContent = 'Nova conversa iniciada';
+      setTimeout(() => {
+        statusText.textContent = 'Lua AI pronta · contexto ativo';
+      }, 1200);
+    });
+
+    document.getElementById('settingsBtn').addEventListener('click', openSettings);
+    document.getElementById('cancelBtn').addEventListener('click', closeSettings);
+    document.getElementById('saveKeyBtn').addEventListener('click', () => {
+      cfg.key = keyInput.value.trim();
+      localStorage.setItem(CONFIG_KEY, JSON.stringify(cfg));
+      closeSettings();
+      statusText.textContent = cfg.key ? 'Chave salva · IA pronta' : 'IA em modo local';
+    });
+
+    document.querySelectorAll('.chip-btn').forEach((button) => {
+      button.addEventListener('click', () => {
+        inputEl.value = button.dataset.prompt;
+        inputEl.focus();
+      });
+    });
+
+    inputEl.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        sendMessage();
+      }
+    });
+
+    inputEl.addEventListener('input', () => {
+      inputEl.style.height = 'auto';
+      inputEl.style.height = Math.min(inputEl.scrollHeight, 160) + 'px';
+    });
+
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) closeSettings();
+    });
+
+    renderHistory();
+    renderFacts();
+    updateContextSummary();
+    memoryCounter.textContent = `${history.length} registros na memória`;
+  </script>
+</body>
+</html>
